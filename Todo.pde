@@ -42,20 +42,29 @@ static final String MYQDICE_PARSER_COPYRIGHT = "Copyright (C) 2014 by Johannes V
 
 
 TODO
-- add playerb mode
-
-- test for finished player
-- test for game over
-- complete general game flow
-- deactivate form if not active
 - show small forms as graphics
+- remove action buttons
+- add text for Player
+- add visual for showing which player is on
+- move play button on small forms
+- special case white mark is making 5th mark in color-allow end mark
 
-- enable close column only on wuerfel allowing
 - switchable und set ist rot nicht schwarz
 - würfel icons
 - calc points
 - dynamic player count
 - android test
+
+
+** 3.7. Complete game
+- complete general game flow
+- special case no mark or all marks reversed!!!
+- add playerb mode
+- test for game over
+- calculate points
+- SPlashscreen added
+- add result screen
+- deactivate form if not active
 
 
 ** 2.7. IMprove game

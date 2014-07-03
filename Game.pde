@@ -45,7 +45,7 @@ Dice d = new Dice();
 int gameMode = MODE_NONE;
 
 int playerStore1Fld, playerStore1FCol;
-
+boolean hasSetAField;
 
 /*************************************************************************************************/
 
@@ -59,6 +59,8 @@ public void newGame() {
   for ( int i=0; i<5; i++ ) {
     sDataEnd[i] = false;
   }
+  
+  initScreenGame();
 
   playerActual = 1;
   
@@ -76,6 +78,8 @@ public void newTurn() {
 
   initForm( playerSDs[playerActual-1] );
   btnPlay.setCaptionLabel( "  Player " );
+  
+  hasSetAField = false;
 
   playerOther = 1;
   if ( playerOther == playerActual ) {
@@ -95,19 +99,33 @@ public void newOther() {
 
 /*************************************************************************************************/
 
+public void endGame() {
+  initScreenEnd();
+  gameMode = MODE_OVER;
+  
+  
+
+}
+
+
+/*************************************************************************************************/
+
 /*************************************************************************************************/
 public void btnPlayStep(int theValue) {
 
   switch( gameMode ) {
     case MODE_NONE: 
       newGame();
+//      endGame();
       break;
       
     case MODE_PLAYERA: 
     case MODE_PLAYERB: 
       // TODO: check player has finished
-      updateSData( playerSDs[playerActual-1] );
-      newOther();
+      if ( hasSetAField ) {
+        updateSData( playerSDs[playerActual-1] );
+        newOther();
+      }
       break;
       
     case MODE_OTHER: 
@@ -124,10 +142,19 @@ public void btnPlayStep(int theValue) {
         playerActual++;
         if ( playerActual > numPlayer ) {
           playerActual = 1;
-        }        
-        // TODO Check for ENDE
-        newTurn();
+        }   
+   
+        // Check for ENDE
+       if ( gameEnded() ) {
+         endGame();
+       } else {
+         newTurn();
+       }
       }
+      break;
+      
+    case MODE_OVER: 
+      newGame();
       break;
       
   }
@@ -170,6 +197,7 @@ public void handleFormToggle( PicToggle pt ) {
         // check fail 
         if ( dval == -1 ) {
            // Kreuz gesetzt also sperre andere Eingaben und nur noch Rücknahm erlaubt
+           hasSetAField = true;
            resetForm( fcol, fld );
         
         // check dval matches 
@@ -185,6 +213,7 @@ public void handleFormToggle( PicToggle pt ) {
               // wenn letztes Feld dann auch Ende setzen 
               println("mark 11 " + fcol);
               setField( ptMark[fcol][11], true );
+              hasSetAField = true;
               resetForm( fcol, fld );
             } else {
              // Ende nicht erlaubt
@@ -192,6 +221,7 @@ public void handleFormToggle( PicToggle pt ) {
             }            
           } else {
             // Alles ok beim Farbwürfel also nur reset
+            hasSetAField = true;
             resetForm( fcol, fld );
           }
 
@@ -205,6 +235,7 @@ public void handleFormToggle( PicToggle pt ) {
             // speichere Feld
             playerStore1Fld = fld;
             playerStore1FCol = fcol;
+            hasSetAField = true;
             gameMode = MODE_PLAYERB;
 
           } else {
@@ -217,10 +248,12 @@ public void handleFormToggle( PicToggle pt ) {
           // speichere Feld 
           playerStore1Fld = fld;
           playerStore1FCol = fcol;
+          hasSetAField = true;
           gameMode = MODE_PLAYERB;
         }
       } else {
         // field is resetted
+        hasSetAField = false;
         initForm( playerSDs[playerActual-1] );
       }
       break;          
@@ -260,6 +293,7 @@ public void handleFormToggle( PicToggle pt ) {
       } else if ( ( fcol == playerStore1FCol ) && ( fld == playerStore1Fld ) ) {
         // A field is resetted
         initForm( playerSDs[playerActual-1] );
+        hasSetAField = false;
         gameMode = MODE_PLAYERA;
 
       } else {

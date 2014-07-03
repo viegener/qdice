@@ -114,15 +114,51 @@ public class SData extends Object {
  }
  
   public boolean allowEnd( int fcol ) {
+    return ( countMarks( fcol ) >= 5 );
+  } 
+  
+  public int countMarks( int fcol ) {
     int cx = 0; 
 
-    for ( int j=0; j<9; j++ ) {
+    for ( int j=0; j<11; j++ ) {
       if (  mark[fcol][j] ) {
         cx++;
       }
     }
     
-    return ( cx >= 5 ); 
+    return cx; 
   } 
+  
+  
+  public int calcPoints( int fcol ) {
+
+    if ( fcol == 4 ) {
+      return (fail * -5);
+    } 
+
+    int cx = 0; 
+    int sx = 0; 
+    for ( int j=0; j<11; j++ ) {
+      if (  mark[fcol][j] ) {
+        cx++;
+        sx += cx;  
+      }
+    }
+
+    return sx; 
+  }
+ 
+ 
+  public int calcPoints() {
+    int cx = 0; 
+
+    for ( int i=0; i<5; i++ ) {
+      cx+= calcPoints(i);
+    }
+    
+    return cx;
+
+
+  }
   
 }

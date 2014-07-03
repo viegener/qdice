@@ -44,6 +44,7 @@ void setup(){
   
   println();
   
+  initScreenSplash();
 }
  
 

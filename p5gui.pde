@@ -42,8 +42,9 @@ import controlP5.*;
 ControlP5 cp5;
 
 Tab tabDefault; 
+Tab tabEnd; 
 
-PImage qpage, qspage;
+PImage qpage, qmpage, qepage, qspage;
 
 PImage don, doff, aon, aoff;
 PImage fdon, fdoff, faon, faoff;
@@ -54,7 +55,7 @@ PicToggle ptFail[];
 PicToggle txtW1;
 PicToggle txtW2, txtR, txtG, txtB, txtY;
 
-Button btnPlay;
+Button btnPlay, btnForm;
 
 // TODO
 SData gsd;
@@ -76,6 +77,11 @@ static final int startYf = formOffsetY + 300;
 static final int offsetXEnd = 3;
 static final int offsetX = +42+5;
 static final int offsetY = +67;
+
+
+static final int startXR = 108;
+static final int offsetXR = 74;
+static final int offsetXREnd = 30;
 
 static final int offsetXf = 21+5;
 
@@ -120,14 +126,29 @@ public void initializeGUI() {
      .setId(1)
      .activateEvent( true )
      ; 
-  
+
+/*  
+  tabEnd = cp5.getTab("end")
+     .setLabel("  End  ")
+     .setId(2)
+     .activateEvent( true )
+     ; 
+*/
+
+
   qpage = loadImage( "qdice-small.png" );
   qpage.resize( formSizeX, formSizeY );
 
-  qspage = loadImage( "qdice-small.png" );
-  qspage.resize( qsSizeX, qsSizeY );
+  qepage = loadImage( "qdice-end.png" );
+  qepage.resize( formSizeX, formSizeY );
 
-  cp5.addButton("btnForm")
+  qspage = loadImage( "qdice-splash.png" );
+  qspage.resize( formSizeX, formSizeY );
+
+  qmpage = loadImage( "qdice-small.png" );
+  qmpage.resize( qsSizeX, qsSizeY );
+
+  btnForm = cp5.addButton("btnForm")
      .setPosition(formOffsetX, formOffsetY )
      .setSize(qpage.width, qpage.height)
      .setImage( qpage )
@@ -295,7 +316,6 @@ public void initializeGUI() {
      .moveTo( tabDefault )
      ;
 
-
 }
 
 
@@ -330,6 +350,49 @@ public PicToggle addPicToggleFail( int posX, int posY, String name ) {
 
   return pt;
 }
+
+/*************************************************************************************************/
+/****************  Init different mode screens                                             *******/
+/*************************************************************************************************/
+
+public void initScreenSplash() {
+  tabDefault.bringToFront();
+
+  btnForm.setImage( qspage );  
+
+  resetForm();
+}
+
+public void initScreenGame() {
+  tabDefault.bringToFront();
+
+  btnForm.setImage( qpage );  
+
+}
+
+public void initScreenEnd() {
+  tabDefault.bringToFront();
+
+  resetForm();
+
+  PGraphics pg = createGraphics( formSizeX, formSizeY );
+  
+  pg.beginDraw();
+  pg.image(qepage, 0,0, formSizeX, formSizeY);
+
+  for ( int i=0; i<numPlayer; i++ ) {
+    showResult(i, playerSDs[i], pg );
+  }
+
+  pg.endDraw();
+
+  btnForm.setImage( pg );  
+
+  resetForm();
+
+}
+
+
 
 /*************************************************************************************************/
 /****************  Handle Buttons                                                          *******/
@@ -386,7 +449,7 @@ public PGraphics makeSPage( SData sd ) {
   
   pg.beginDraw();
   
-  pg.image(qspage, 0,0, qsSizeX, qsSizeY);
+  pg.image(qmpage, 0,0, qsSizeX, qsSizeY);
   pg.resize( qsSizeX, qsSizeY );
 
   posY = sty;
@@ -480,6 +543,27 @@ public void initForm( SData sd ) {
 /****************  reset Form                                                              *******/
 /*************************************************************************************************/
 
+public void resetForm( ) {
+  initForm = true;
+
+  for ( int i=3; i>=0; i-- ) {
+    for ( int j=11; j>=0; j-- ) {
+      ptMark[i][j].setSwitchable( true );
+      ptMark[i][j].setState( false );
+      ptMark[i][j].setSwitchable( false );
+    }
+  }
+
+  for ( int i=0; i<4; i++ ) {
+    ptFail[i].setSwitchable( true );
+    ptFail[i].setState( false );
+    ptFail[i].setSwitchable( false );
+  }
+
+  initForm = false;
+}
+
+
 public void resetForm( int fCol, int field ) {
   initForm = true;
   for ( int i=3; i>=0; i-- ) {
@@ -523,11 +607,11 @@ public void updateSData( SData sd ) {
   for ( int i=3; i>=0; i-- ) {
     boolean setSw = true;
     for ( int j=11; j>=0; j-- ) {
-      if ( ptMark[i][j].isSwitchable() ) {
+//      if ( ptMark[i][j].isSwitchable() ) {
         if ( ptMark[i][j].getState() ) {
           sd.setMark(i,j);
         }
-      }
+//      }
     }
     if ( ptMark[i][11].getState() ) {
       sDataEnd[i] = true;
@@ -579,6 +663,42 @@ public void showDice( Dice d ) {
    txtG.setCaptionLabel(  "   "+str(d.g) );
    txtB.setCaptionLabel(  "   "+str(d.b) );
  
+}
+
+
+/*************************************************************************************************/
+/****************  showResult                                                                *******/
+/*************************************************************************************************/
+
+public void showResult( int nPlayer, SData sd, PGraphics pg ) {
+  
+
+  int posx = startXR;
+  int posy = startY - formOffsetY + (nPlayer*offsetY) + (offsetY/2);
+  
+  pg.textSize(24);
+  pg.textAlign( CENTER );
+  pg.fill(0xFF111111);
+  
+  pg.text("" + sd.calcPoints(0), posx, posy );
+  posx += offsetXR;
+  
+  pg.text("" + sd.calcPoints(1), posx, posy );
+  posx += offsetXR;
+  
+  pg.text("" + sd.calcPoints(2), posx, posy );
+  posx += offsetXR;
+  
+  pg.text("" + sd.calcPoints(3), posx, posy );
+  posx += offsetXR;
+
+  pg.text("" + sd.calcPoints(4), posx, posy );
+  posx += offsetXR;
+
+  posx += offsetXREnd;
+  pg.text("" + sd.calcPoints(), posx, posy );
+
+
 }
 
 
