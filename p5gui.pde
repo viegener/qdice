@@ -67,7 +67,7 @@ boolean initForm;
 static final int formOffsetX = 5;
 static final int formOffsetY = 50;
 
-static final int startX = formOffsetX + 17;
+static final int startX = formOffsetX + 18;
 static final int startY = formOffsetY + 10;
 
 static final int startXf = formOffsetX + 489;
@@ -121,10 +121,10 @@ public void initializeGUI() {
      .activateEvent( true )
      ; 
   
-  qpage = loadImage( "qwix-full-large.jpg" );
+  qpage = loadImage( "qdice-small.png" );
   qpage.resize( formSizeX, formSizeY );
 
-  qspage = loadImage( "qwix-full-large.jpg" );
+  qspage = loadImage( "qdice-small.png" );
   qspage.resize( qsSizeX, qsSizeY );
 
   cp5.addButton("btnForm")
@@ -167,8 +167,8 @@ public void initializeGUI() {
       ptMark[i][j] .setPos( i, j );
 
       posX += offsetX;
-      if ( j%3 == 0 )
-        posX++;
+//      if ( j%3 == 0 )
+//        posX++;
     }
 
     posX += offsetXEnd;
