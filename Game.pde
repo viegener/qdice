@@ -1,23 +1,23 @@
 /************************************************************************************************
  *
- *  qwix
+ *  qdice
  *
  *  Copyright 2014 by Johannes Viegener
  *
- *  This file is part of qwix.
+ *  This file is part of qdice.
  *
- *  qwix is free software: you can redistribute it and/or modify
+ *  qdice is free software: you can redistribute it and/or modify
  *  it under the terms of the Lesser GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  qwix is distributed in the hope that it will be useful,
+ *  qdice is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the Lesser GNU General Public License
- *  along with qwix.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with qdice.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @author     Johannes Viegener
  *
@@ -43,6 +43,9 @@ int playerOther;
 Dice d = new Dice();
 
 int gameMode = MODE_NONE;
+
+int playerStore1Fld, playerStore1FCol;
+
 
 /*************************************************************************************************/
 
@@ -199,8 +202,9 @@ public void handleFormToggle( PicToggle pt ) {
               println("mark 11b " + fcol);
             setField( ptMark[fcol][11], true );
 
-            // speichere Feld ??????????????????????????????????????????????
-
+            // speichere Feld
+            playerStore1Fld = fld;
+            playerStore1FCol = fcol;
             gameMode = MODE_PLAYERB;
 
           } else {
@@ -210,20 +214,60 @@ public void handleFormToggle( PicToggle pt ) {
 
         // Weiss passt also erster Schritt gemacht
         } else {
-          
-          // speichere Feld ??????????????????????????????????????????????
-
+          // speichere Feld 
+          playerStore1Fld = fld;
+          playerStore1FCol = fcol;
           gameMode = MODE_PLAYERB;
         }
       } else {
         // field is resetted
         initForm( playerSDs[playerActual-1] );
-        
-        // ??????????? reset also fld 10
       }
       break;          
           
     case MODE_PLAYERB: 
+      if ( pt.getState() ) {
+        // check fail 
+        if ( dval == -1 ) {
+           // Kreuz gesetzt not allowed
+           resetField( pt );
+
+        // in B farbwürfel muss passen
+        } else if ( ! d.isColorValue(fcol, dval) ) {
+          // passt auch nicht also zurück
+          resetField( pt );
+
+        // setting entry for color dice to lower number is not allowed
+        } else if ( ( fcol == playerStore1FCol ) && ( fld <= playerStore1Fld ) ) {
+          // also zurück
+          resetField( pt );
+
+        } else if ( ( fld == 10 ) && ( ! playerSDs[playerActual-1].allowEnd( fcol ) ) ){
+          // fld 10 war nicht erlaubt
+          resetField( pt );
+
+        } else {
+          if ( fld == 10 ) {
+            // wenn letztes Feld dann auch Ende setzen 
+            println("mark 12 " + fcol);
+            setField( ptMark[fcol][11], true );
+          }
+          // now all ok only allow reset
+          resetForm( fcol, fld );
+        }
+       
+      // reset   
+      } else if ( ( fcol == playerStore1FCol ) && ( fld == playerStore1Fld ) ) {
+        // A field is resetted
+        initForm( playerSDs[playerActual-1] );
+        gameMode = MODE_PLAYERA;
+
+      } else {
+        // B field is resetted
+        initForm( playerSDs[playerActual-1] );
+        setField( ptMark[playerStore1FCol][playerStore1Fld], true );
+
+      }
       break;
 
 
@@ -249,8 +293,6 @@ public void handleFormToggle( PicToggle pt ) {
       } else {
         // field is resetted
         initForm( playerSDs[playerOther-1] );
-
-        // ??????????? reset also fld 10
       }
       break;
   }

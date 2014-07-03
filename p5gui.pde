@@ -1,23 +1,23 @@
 /************************************************************************************************
  *
- *  qwix
+ *  qdice
  *
  *  Copyright 2014 by Johannes Viegener
  *
- *  This file is part of qwix.
+ *  This file is part of qdice.
  *
- *  qwix is free software: you can redistribute it and/or modify
+ *  qdice is free software: you can redistribute it and/or modify
  *  it under the terms of the Lesser GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  qwix is distributed in the hope that it will be useful,
+ *  qdice is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the Lesser GNU General Public License
- *  along with qwix.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with qdice.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @author     Johannes Viegener
  *
@@ -94,7 +94,7 @@ static final String pt_base = "pt";
 public void initializeGUI() {
   size(1000, 550);
   frameRate(30); 
-  frame.setTitle(MYQWIX_PARSER_COPYRIGHT);
+  frame.setTitle(MYQDICE_PARSER_COPYRIGHT);
 
   PFont pfont = createFont("Arial",10,true); // use true/false for smooth/no-smooth
   PFont pfontEditor = createFont("Courier",12,true); // use true/false for smooth/no-smooth
