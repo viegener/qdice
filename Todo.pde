@@ -34,7 +34,7 @@
 static final String MQ_VERSION = "0.1";
 static final String MQ_REVISION = "2013/04/18"; 
 
-static final String MYQDICE_PARSER_TITLE_REV = "MyQwix V" + MQ_VERSION + " - " + MQ_REVISION; 
+static final String MYQDICE_PARSER_TITLE_REV = "QDICE V" + MQ_VERSION + " - " + MQ_REVISION; 
 
 static final String MYQDICE_PARSER_COPYRIGHT = "Copyright (C) 2014 by Johannes Viegener";
 
@@ -42,15 +42,15 @@ static final String MYQDICE_PARSER_COPYRIGHT = "Copyright (C) 2014 by Johannes V
 
 
 TODO
-- calibrate small forms - crosses smaller and more central
 - add text for Player
 - move play button on small forms
 - special case white mark is making 5th mark in color-allow end mark
 
 - switchable und set ist rot nicht schwarz
-- würfel icons
 - dynamic player count
 - android test
+- store game for resume
+- quit game
 
 ** 4.7. 
 - new splash screen
@@ -59,6 +59,12 @@ TODO
 - miniForms for player
 - remove action buttons
 - add visual for showing which player is on
+- calibrate small forms - crosses smaller and more central
+- FIX: corrrected title for naming the program
+- reduce size of window
+- würfel icons
+- move playbutton
+- show other/active on dices
 
 ** 3.7. Complete game
 - complete general game flow

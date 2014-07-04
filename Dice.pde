@@ -30,6 +30,17 @@
 /*****************                                                                                ***************/
 /****************************************************************************************************************/
 
+static final int NUM_DICES = 6;
+
+static final int DICE_W1 = 0;
+static final int DICE_W2 = 1;
+static final int DICE_R = 2;
+static final int DICE_Y = 3;
+static final int DICE_G = 4;
+static final int DICE_B = 5;
+
+
+
 public class Dice extends Object {
   public int w1, w2, r, g, b, y;
   
@@ -71,4 +82,40 @@ public class Dice extends Object {
     return ( ( dval == (cold + w1) ) || ( dval == (cold + w2) ) );
   }
 
+
+  public int getDiceValue( int dIdx ) {
+    int val = -1;
+
+    switch( dIdx ) {
+      case DICE_W1:
+        val = w1;
+        break;
+      case DICE_W2:
+        val = w2;
+        break;
+      case DICE_R:
+        val = r;
+        break;
+      case DICE_Y:
+        val = y;
+        break;
+      case DICE_G:
+        val = g;
+        break;
+      case DICE_B:
+        val = b;
+        break;
+    }
+    
+    return val;
+    
+  }
+
+
+
 }
+
+
+
+
+

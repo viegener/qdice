@@ -86,7 +86,7 @@ public void newGame() {
 
 public void newTurn() {
   d.roll();
-  showDice( d );
+  showDice( d, true );
   
   gameMode = MODE_PLAYERA;
 
@@ -106,6 +106,8 @@ public boolean newOther() {
   if ( playerOther == -1 ) {
     updateSData( playerSDs[playerActual] );
     showMiniForm( playerActual, playerSDs[playerActual], AO_PLAYER );
+    showDice( d, false );
+
   } else {
     updateSData( playerSDs[playerOther] );
     showMiniForm( playerOther, playerSDs[playerOther], AO_NONE );

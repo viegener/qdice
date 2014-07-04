@@ -56,19 +56,42 @@ PImage fdon, fdoff, faon, faoff;
 PicToggle ptMark[][];
 PicToggle ptFail[];
 
-PicToggle txtW1;
-PicToggle txtW2, txtR, txtG, txtB, txtY;
-
 Button btnPlay, btnForm;
 Button btnSForms[];
+
+
+Button btnDices[];
+PImage picDices[];
+
+static final int diceColor[] = { 
+      0xFFDDDDDD,
+      0xFFDDDDDD,
+      0xFFDD0000,
+      0xFFDDDD00,
+      0xFF00DD00,
+      0xFF0000DD
+};
+
+static final int diceOtherColor[] = { 
+      0xFFDDDDDD,
+      0xFFDDDDDD,
+      0xFF220000,
+      0xFF222200,
+      0xFF002200,
+      0xFF000022
+};
+
+
+
+
 
 
 boolean initForm;
 
 /*************************************************************************************************/
 
-static final int formOffsetX = 5;
-static final int formOffsetY = 50;
+static final int formOffsetX = 0; // 5;
+static final int formOffsetY = 0;  // 50;
 
 static final int startX = formOffsetX + 18;
 static final int startY = formOffsetY + 10;
@@ -93,6 +116,8 @@ static final int formSizeY = 400;
 static final int qmSizeX = formSizeX/4;
 static final int qmSizeY = formSizeY/4;
 
+static final int diceSize = 30;
+
 static final int padSize = 10;
 
 static final String pt_base = "pt"; 
@@ -105,9 +130,9 @@ public void initializeGUI() {
   int posX, posY;
   String ptName;
 
-  size(1000, 550);
+  size(formSizeX+(2*padSize)+qmSizeX, formSizeY+(2*padSize));
   frameRate(30); 
-  frame.setTitle(MYQDICE_PARSER_COPYRIGHT);
+  frame.setTitle(MYQDICE_PARSER_TITLE_REV);
 
   PFont pfont = createFont("Arial",10,true); // use true/false for smooth/no-smooth
   PFont pfontEditor = createFont("Courier",12,true); // use true/false for smooth/no-smooth
@@ -165,7 +190,8 @@ public void initializeGUI() {
      ;
 
   btnSForms = new Button[MAX_PLAYER];
-  posY = formOffsetY-(MAX_PLAYER * padSize / 2);
+//  posY = formOffsetY-(MAX_PLAYER * padSize / 2);
+  posY = formOffsetY;
   for ( int i=0; i< MAX_PLAYER; i++ ) {
     btnSForms[i] = cp5.addButton("btnSForms" + i)
        .setPosition(formOffsetX+formSizeX + padSize, posY  )
@@ -228,81 +254,48 @@ public void initializeGUI() {
 
   /***********************************************/
 
-  txtW1 = new PicToggle( cp5, "txtW1");
-  txtW1.setPosition(formOffsetX, 10 )
-     .setSize(20, 20)
-//     .setColor( 0xFFFFFFFF )
-     .setColorActive( 0xFFFFFFFF )
-     .setColorBackground( 0xFFDDDDDD )
-     .setColorForeground( 0xFFDDDDDD )
-     .setCaptionLabel( "--" )
-     .moveTo( tabDefault )
-     ;
-
-
-  txtW2 = new PicToggle( cp5, "txtW2");
-  txtW2.setPosition(formOffsetX+30, 10 )
-     .setSize(20, 20)
-//     .setColor( 0xFFFFFFFF )
-     .setColorActive( 0xFFFFFFFF )
-     .setColorBackground( 0xFFDDDDDD )
-     .setColorForeground( 0xFFDDDDDD )
-     .setCaptionLabel( "--" )
-     .moveTo( tabDefault )
-     ;
-
-  txtR = new PicToggle( cp5, "txtR");
-  txtR.setPosition(formOffsetX+60, 10 )
-     .setSize(20, 20)
-//     .setColor( 0xFFFFFFFF )
-     .setColorActive( 0xFFFF0000 )
-     .setColorBackground( 0xFFDD0000 )
-     .setColorForeground( 0xFFDD0000 )
-     .setCaptionLabel( "--" )
-     .moveTo( tabDefault )
-     ;
-
-  txtY = new PicToggle( cp5, "txtY");
-  txtY.setPosition(formOffsetX+90, 10 )
-     .setSize(20, 20)
-//     .setColor( 0xFFFFFFFF )
-     .setColorActive( 0xFFFFFF00 )
-     .setColorBackground( 0xFFDDDD00 )
-     .setColorForeground( 0xFFDDDD00 )
-     .setCaptionLabel( "--" )
-     .moveTo( tabDefault )
-     ;
-
-  txtG = new PicToggle( cp5, "txtG");
-  txtG.setPosition(formOffsetX+120, 10 )
-     .setSize(20, 20)
-//     .setColor( 0xFFFFFFFF )
-     .setColorActive( 0xFF00FF00 )
-     .setColorBackground( 0xFF00DD00 )
-     .setColorForeground( 0xFF00DD00 )
-     .setCaptionLabel( "--" )
-     .moveTo( tabDefault )
-     ;
-
-  txtB = new PicToggle( cp5, "txtB");
-  txtB.setPosition(formOffsetX+150, 10 )
-     .setSize(20, 20)
-//     .setColor( 0xFFFFFFFF )
-     .setColorActive( 0xFF0000FF )
-     .setColorBackground( 0xFF0000DD )
-     .setColorForeground( 0xFF0000DD )
-     .setCaptionLabel( "--" )
-     .moveTo( tabDefault )
-     ;
-
 // TODO: change colors or button
   btnPlay = cp5.addButton("btnPlayStep")
-     .setPosition(500, 25 )
+     .setPosition(formOffsetX + formSizeX - 150, startY + ( 5 * offsetY ) )
      .setSize(100, 20)
      .setCaptionLabel( " Play " )
 //     .setColorBackground( 0xFFFFFFFF )
      .moveTo( tabDefault )
      ;
+
+
+  /****************** DICES ***************/
+
+  btnDices = new Button[NUM_DICES];
+  picDices = new PImage[7];
+
+  picDices[1] = loadImage( "dice-1.png" );
+  picDices[2] = loadImage( "dice-2.png" );
+  picDices[3] = loadImage( "dice-3.png" );
+  picDices[4] = loadImage( "dice-4.png" );
+  picDices[5] = loadImage( "dice-5.png" );
+  picDices[6] = loadImage( "dice-6.png" );
+
+  for ( int i=1; i< 7; i++ ) {
+    picDices[i].resize( diceSize, diceSize );
+  }
+
+  posY = startY + ( 5 * offsetY );
+  posX = startX;
+  
+  for ( int i=0; i< NUM_DICES; i++ ) {
+    btnDices[i] = cp5.addButton("btnDices" + i)
+       .setPosition(posX, posY  )
+       .setSize(diceSize, diceSize)
+       .setImage( picDices[i+1] )
+       .hide()
+       .moveTo( tabDefault )
+       ;
+    posX += diceSize + padSize; 
+    picDices[i] = loadImage( "dice-" + i + ".png" );
+    qepage.resize( formSizeX, formSizeY );
+  }
+
 
 }
 
@@ -351,6 +344,9 @@ public void initScreenSplash() {
   for ( int i=0; i< numPlayer; i++ ) {
     btnSForms[i].hide();
   }
+  for ( int i=0; i< NUM_DICES; i++ ) {
+    btnDices[i].hide();
+  }
   
   resetForm();
 }
@@ -362,6 +358,9 @@ public void initScreenGame() {
 
   for ( int i=0; i< numPlayer; i++ ) {
     btnSForms[i].show();
+  }
+  for ( int i=0; i< NUM_DICES; i++ ) {
+    btnDices[i].show();
   }
   
 }
@@ -386,6 +385,9 @@ public void initScreenEnd() {
 
   for ( int i=0; i< numPlayer; i++ ) {
     btnSForms[i].show();
+  }
+  for ( int i=0; i< NUM_DICES; i++ ) {
+    btnDices[i].hide();
   }
 
   resetForm();
@@ -415,19 +417,19 @@ public void showMiniForm( int plid, SData sd, int activeOther ) {
 public PGraphics makeMPage( SData sd, int activeOther  ) {
   PGraphics pg = createGraphics( qmSizeX+padSize, qmSizeY+padSize);
   
-  int stx = ((startX-formOffsetX) / 4)+1 + (padSize/2);
-  int sty = ((startY-formOffsetY) / 4)+1 + (padSize/2);
+  int stx = ((startX-formOffsetX) / 4)+1 + (padSize/2) + 2;   // last is correction for smaller cross (4/2)
+  int sty = ((startY-formOffsetY) / 4)+1 + (padSize/2) + 3;
   
   int stfx = ((startXf-formOffsetX) / 4)+1 + (padSize/2);
   int stfy = ((startYf-formOffsetY) / 4)+1 + (padSize/2);
   
   int ox = ((offsetX) / 4);
-  int oy = ((offsetY) / 4)+1;
+  int oy = ((offsetY) / 4);
   
   int ofx = ((offsetXf) / 4);
 
-  int h = 10;
-  int w = 10;
+  int h = 5;
+  int w = 5;
 
   int posX, posY;
   
@@ -448,21 +450,30 @@ public PGraphics makeMPage( SData sd, int activeOther  ) {
   for ( int i = 0; i < 4; i++ ) {
     posX = stx;
     for ( int j=0; j<11; j++ ) {
-      if ( sd.getMark( i, j ) ) {
+//      if ( sd.getMark( i, j ) ) {
         pg.line( posX, posY, posX+w, posY+h );
         pg.line( posX+w, posY, posX, posY+h );
-      }
+//      }
       
       posX += ox;
+      if ( (j%2) == 0 ) {
+        posX += 1;
+      }
+      if ( (j%3) == 1 ) {
+        posX ++;
+      }
     }
 
-    if ( sd.getMark( i, 11 ) ) {
+//    if ( sd.getMark( i, 11 ) ) {
       posX += (offsetXEnd/4);
       pg.line( posX, posY, posX+w, posY+h );
       pg.line( posX+w, posY, posX, posY+h );
-    }
+//    }
     
     posY += oy;
+//    if ( (i%2) == 1 ) {
+//      posY ++;
+//    }
   }
 
   /* add fails */
@@ -474,6 +485,7 @@ public PGraphics makeMPage( SData sd, int activeOther  ) {
 
   posX = stfx;
   for ( int i=0; i<sd.getFail(); i++ ) {
+//  for ( int i=0; i<4; i++ ) {
 
     pg.line( posX, posY, posX+w, posY+h );
     pg.line( posX+w, posY, posX, posY+h );
@@ -632,7 +644,8 @@ public void updateSData( SData sd ) {
 
 void draw() {
   // dark background
-  background(0xff022020);
+//  background(0xff022020);
+  background(0xfff2f2f2);
   /*
   if ( gpg != null ) {
     image( gpg, formOffsetX+650, formOffsetY );
@@ -646,15 +659,27 @@ void draw() {
 /****************  showDice                                                                *******/
 /*************************************************************************************************/
 
-public void showDice( Dice d ) {
 
-   txtW1.setCaptionLabel( "   "+str(d.w1) );
-   txtW2.setCaptionLabel( "   "+str(d.w2) );
-   txtR.setCaptionLabel(  "   "+str(d.r) );
-   txtY.setCaptionLabel(  "   "+str(d.y) );
-   txtG.setCaptionLabel(  "   "+str(d.g) );
-   txtB.setCaptionLabel(  "   "+str(d.b) );
- 
+public void showDice( Dice d, boolean active ) {
+
+  /* new with pictures */
+  for( int i=0; i<NUM_DICES; i++ ) {
+    PGraphics pg = createGraphics( diceSize, diceSize );;
+  
+
+    pg.beginDraw();
+    if ( active ) {
+      pg.background( diceColor[i] );
+    } else {
+      pg.background( diceOtherColor[i] );
+    }
+  
+    pg.image(picDices[ d.getDiceValue(i) ], 0,0, diceSize, diceSize );
+    pg.endDraw();
+    
+    btnDices[i].setImage( pg );
+  }
+
 }
 
 
