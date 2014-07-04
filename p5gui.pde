@@ -57,7 +57,7 @@ PicToggle ptMark[][];
 PicToggle ptFail[];
 
 Button btnPlay, btnForm;
-Button btnSForms[];
+Button btnMForms[];
 
 
 Button btnDices[];
@@ -80,10 +80,6 @@ static final int diceOtherColor[] = {
       0xFF002200,
       0xFF000022
 };
-
-
-
-
 
 
 boolean initForm;
@@ -113,12 +109,15 @@ static final int offsetXf = 21+5;
 static final int formSizeX = 600;
 static final int formSizeY = 400;
 
+static final int formSizeMY = 300;
+
 static final int qmSizeX = formSizeX/4;
-static final int qmSizeY = formSizeY/4;
+static final int qmSizeY = formSizeMY/4;
 
 static final int diceSize = 30;
 
 static final int padSize = 10;
+static final int qmlabelSize = 20;
 
 static final String pt_base = "pt"; 
 
@@ -170,7 +169,7 @@ public void initializeGUI() {
 */
 
 
-  qpage = loadImage( "qdice-small.png" );
+  qpage = loadImage( "qdice-form.png" );
   qpage.resize( formSizeX, formSizeY );
 
   qepage = loadImage( "qdice-end.png" );
@@ -179,7 +178,7 @@ public void initializeGUI() {
   qspage = loadImage( "qdice-splash.png" );
   qspage.resize( formSizeX, formSizeY );
 
-  qmpage = loadImage( "qdice-mini.png" );
+  qmpage = loadImage( "qdice-mini-b.png" );
   qmpage.resize( qmSizeX, qmSizeY );
 
   btnForm = cp5.addButton("btnForm")
@@ -189,18 +188,18 @@ public void initializeGUI() {
      .moveTo( tabDefault )
      ;
 
-  btnSForms = new Button[MAX_PLAYER];
+  btnMForms = new Button[MAX_PLAYER];
 //  posY = formOffsetY-(MAX_PLAYER * padSize / 2);
   posY = formOffsetY;
   for ( int i=0; i< MAX_PLAYER; i++ ) {
-    btnSForms[i] = cp5.addButton("btnSForms" + i)
+    btnMForms[i] = cp5.addButton("btnMForms" + i)
        .setPosition(formOffsetX+formSizeX + padSize, posY  )
-       .setSize(qmpage.width + padSize, qmpage.height + padSize)
+       .setSize(qmpage.width + padSize, qmpage.height + qmlabelSize + padSize)
        .setImage( qmpage )
        .hide()
        .moveTo( tabDefault )
        ;
-    posY += qmpage.height + padSize; 
+    posY += qmpage.height + qmlabelSize + padSize; 
     }
 
   initForm = true;
@@ -254,10 +253,9 @@ public void initializeGUI() {
 
   /***********************************************/
 
-// TODO: change colors or button
-  btnPlay = cp5.addButton("btnPlayStep")
-     .setPosition(formOffsetX + formSizeX - 150, startY + ( 5 * offsetY ) )
-     .setSize(100, 20)
+  btnPlay = cp5.addButton("btnPlay")
+     .setPosition(formOffsetX + formSizeX - 200, startY + ( 5 * offsetY ) )
+     .setSize(150, 30)
      .setCaptionLabel( " Play " )
 //     .setColorBackground( 0xFFFFFFFF )
      .moveTo( tabDefault )
@@ -339,30 +337,36 @@ public PicToggle addPicToggleFail( int posX, int posY, String name ) {
 public void initScreenSplash() {
   tabDefault.bringToFront();
 
+  btnForm.setPosition((width - formSizeX)/2 , formOffsetY );
   btnForm.setImage( qspage );  
 
   for ( int i=0; i< numPlayer; i++ ) {
-    btnSForms[i].hide();
+    btnMForms[i].hide();
   }
   for ( int i=0; i< NUM_DICES; i++ ) {
     btnDices[i].hide();
   }
   
+  btnPlay.hide();
+
   resetForm();
 }
 
 public void initScreenGame() {
   tabDefault.bringToFront();
 
+  btnForm.setPosition(formOffsetX, formOffsetY );
   btnForm.setImage( qpage );  
 
   for ( int i=0; i< numPlayer; i++ ) {
-    btnSForms[i].show();
+    btnMForms[i].show();
   }
   for ( int i=0; i< NUM_DICES; i++ ) {
     btnDices[i].show();
   }
   
+  btnPlay.show();
+
 }
 
 public void initScreenEnd() {
@@ -381,14 +385,17 @@ public void initScreenEnd() {
 
   pg.endDraw();
 
+  btnForm.setPosition(formOffsetX, formOffsetY );
   btnForm.setImage( pg );  
 
   for ( int i=0; i< numPlayer; i++ ) {
-    btnSForms[i].show();
+    btnMForms[i].show();
   }
   for ( int i=0; i< NUM_DICES; i++ ) {
     btnDices[i].hide();
   }
+
+  btnPlay.show();
 
   resetForm();
 
@@ -400,9 +407,17 @@ public void initScreenEnd() {
 /****************  Handle Buttons                                                          *******/
 /*************************************************************************************************/
 
-
-/* nothing */
-
+public void btnPlay(int theValue) {
+  playNextStep();
+}
+  
+public void btnForm(int theValue) {
+  if ( gameMode == MODE_NONE ) {
+    playNextStep();
+  }
+}
+  
+  
 /*************************************************************************************************/
 /****************  PGraphics for small qpage                                               *******/
 /*************************************************************************************************/
@@ -410,18 +425,18 @@ public void initScreenEnd() {
 // 0 - inactive / 1 - other / 2 - player
 
 public void showMiniForm( int plid, SData sd, int activeOther ) {
-  btnSForms[plid].setImage( makeMPage(sd, activeOther) );
+  btnMForms[plid].setImage( makeMPage( plid, sd, activeOther) );
 }
 
 
-public PGraphics makeMPage( SData sd, int activeOther  ) {
-  PGraphics pg = createGraphics( qmSizeX+padSize, qmSizeY+padSize);
+public PGraphics makeMPage( int plid, SData sd, int activeOther  ) {
+  PGraphics pg = createGraphics( qmSizeX+padSize, qmlabelSize + qmSizeY+padSize);
   
   int stx = ((startX-formOffsetX) / 4)+1 + (padSize/2) + 2;   // last is correction for smaller cross (4/2)
-  int sty = ((startY-formOffsetY) / 4)+1 + (padSize/2) + 3;
+  int sty = ((startY-formOffsetY) / 4)+1 + (padSize/2) + 3 + qmlabelSize;
   
-  int stfx = ((startXf-formOffsetX) / 4)+1 + (padSize/2);
-  int stfy = ((startYf-formOffsetY) / 4)+1 + (padSize/2);
+  int stfx = ((startXf-formOffsetX) / 4)+1 + (padSize/2) - 1;
+  int stfy = ((startYf-formOffsetY) / 4)+1 + (padSize/2) + qmlabelSize - 8;
   
   int ox = ((offsetX) / 4);
   int oy = ((offsetY) / 4);
@@ -436,14 +451,17 @@ public PGraphics makeMPage( SData sd, int activeOther  ) {
   pg.beginDraw();
   
   if ( activeOther == AO_PLAYER ) {
-    pg.image(rainbow, 0, 0, qmSizeX+padSize, qmSizeY+padSize );
+    pg.image(rainbow, 0, 0, qmSizeX+padSize, qmSizeY+qmlabelSize+padSize );
   } else if ( activeOther == AO_OTHER ) {
     pg.background( 0xFFDDDDDD );
   } else {
     pg.background( 0xff022020);
   }
   
-  pg.image(qmpage, padSize/2,padSize/2, qmSizeX, qmSizeY);
+  pg.textSize( 14 );
+  pg.fill( 0xFFDDDDDD );
+  pg.text( "Spieler " + (plid+1), padSize, qmlabelSize );
+  pg.image(qmpage, padSize/2, qmlabelSize + (padSize/2), qmSizeX, qmSizeY);
 
   posY = sty;
 

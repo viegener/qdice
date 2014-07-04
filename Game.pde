@@ -91,7 +91,7 @@ public void newTurn() {
   gameMode = MODE_PLAYERA;
 
   initForm( playerSDs[playerActual] );
-  btnPlay.setCaptionLabel( "  Player " );
+  btnPlay.setCaptionLabel( "  Würfel-Spieler >" + (playerActual+1) +"<" );
   showMiniForm( playerActual, playerSDs[playerActual], AO_PLAYER );
   
   hasSetAField = false;
@@ -126,7 +126,7 @@ public boolean newOther() {
   gameMode = MODE_OTHER;
 
   initForm( playerSDs[playerOther] );
-  btnPlay.setCaptionLabel( "  Other " + playerOther );
+  btnPlay.setCaptionLabel( "  Anderer Spieler >" + (playerOther+1) +"<" );
   showMiniForm( playerOther, playerSDs[playerOther], AO_OTHER );
 
   return true;
@@ -136,6 +136,8 @@ public boolean newOther() {
 
 public void endGame() {
   initScreenEnd();
+  btnPlay.setCaptionLabel( " Neues Spiel " );
+
   gameMode = MODE_OVER;
   
   
@@ -146,7 +148,7 @@ public void endGame() {
 /*************************************************************************************************/
 
 /*************************************************************************************************/
-public void btnPlayStep(int theValue) {
+public void playNextStep() {
 
   switch( gameMode ) {
     case MODE_NONE: 
@@ -300,7 +302,10 @@ public void handleFormToggle( PicToggle pt ) {
           // also zurück
           resetField( pt );
 
-        } else if ( ( fld == 10 ) && ( ! playerSDs[playerActual].allowEnd( fcol ) ) ){
+        } else if ( ( fld == 10 ) && 
+                    ( ! playerSDs[playerActual].allowEnd( fcol ) ) &&
+                    ( ( playerSDs[playerActual].countMarks( fcol ) == 4 ) && ( fcol != playerStore1FCol ) ) 
+                  ) {
           // fld 10 war nicht erlaubt
           resetField( pt );
 

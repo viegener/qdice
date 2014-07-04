@@ -42,11 +42,14 @@ static final String MYQDICE_PARSER_COPYRIGHT = "Copyright (C) 2014 by Johannes V
 
 
 TODO
-- add text for Player
-- make actual player mark more visible
-- add specific texts and counts form player
-- move play button on small forms
-- special case white mark is making 5th mark in color-allow end mark
+- add hints for possible moves
+    - prio 1 ist abschliessen - wenn gute punktzahl
+    - prio 2 versuche so nah wir moeglich - 0 dist (1 dist akzaptabel / 2-dist nur wenn nicht zu oft und noch gut Platz)
+    - prio 3 versuche beide Wuerfel als aktiver spieler zu setzen (aber nur mit guten / max akzeptablen werten)
+    Versuche gute Verteilung zu bekommen - d.h also moeglichst viele Zahlen nutzbar
+    Bei wenig platz akzeptiere nur noch 0-dist
+    
+- add kI
 
 - switchable und set ist rot nicht schwarz
 - dynamic player count
@@ -67,6 +70,13 @@ TODO
 - würfel icons
 - move playbutton
 - show other/active on dices
+- new pictures without frame
+- FIX: special case white mark is making 5th mark in color-allow end mark
+- start game on splash
+- add specific texts and counts form player
+- splash screen in the middle
+- add text for Player
+- make actual player mark more visible
 
 ** 3.7. Complete game
 - complete general game flow
