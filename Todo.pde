@@ -31,8 +31,8 @@
 /*************************************************************************************************/
 
 
-static final String MQ_VERSION = "0.1";
-static final String MQ_REVISION = "2013/04/18"; 
+static final String MQ_VERSION = "1.0";
+static final String MQ_REVISION = "2013/07/05"; 
 
 static final String MYQDICE_PARSER_TITLE_REV = "QDICE V" + MQ_VERSION + " - " + MQ_REVISION; 
 
@@ -77,6 +77,8 @@ TODO
 - splash screen in the middle
 - add text for Player
 - make actual player mark more visible
+- define version 1
+- add area to click on splashscreen due to large number of other buttons that filter clicks
 
 ** 3.7. Complete game
 - complete general game flow
