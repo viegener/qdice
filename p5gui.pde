@@ -450,10 +450,10 @@ public PGraphics makeMPage( SData sd, int activeOther  ) {
   for ( int i = 0; i < 4; i++ ) {
     posX = stx;
     for ( int j=0; j<11; j++ ) {
-//      if ( sd.getMark( i, j ) ) {
+      if ( sd.getMark( i, j ) ) {
         pg.line( posX, posY, posX+w, posY+h );
         pg.line( posX+w, posY, posX, posY+h );
-//      }
+      }
       
       posX += ox;
       if ( (j%2) == 0 ) {
@@ -464,11 +464,11 @@ public PGraphics makeMPage( SData sd, int activeOther  ) {
       }
     }
 
-//    if ( sd.getMark( i, 11 ) ) {
+    if ( sd.getMark( i, 11 ) ) {
       posX += (offsetXEnd/4);
       pg.line( posX, posY, posX+w, posY+h );
       pg.line( posX+w, posY, posX, posY+h );
-//    }
+    }
     
     posY += oy;
 //    if ( (i%2) == 1 ) {

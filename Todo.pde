@@ -43,6 +43,8 @@ static final String MYQDICE_PARSER_COPYRIGHT = "Copyright (C) 2014 by Johannes V
 
 TODO
 - add text for Player
+- make actual player mark more visible
+- add specific texts and counts form player
 - move play button on small forms
 - special case white mark is making 5th mark in color-allow end mark
 
