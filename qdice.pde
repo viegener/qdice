@@ -36,7 +36,7 @@ void setup(){
   println();  
  
   initializeGUI();
-  btnClear(1);
+  initScreenSplash();
  
   println();
   println(MYQDICE_PARSER_TITLE_REV);
@@ -44,7 +44,6 @@ void setup(){
   
   println();
   
-  initScreenSplash();
 }
  
 

@@ -24,6 +24,9 @@
  *************************************************************************************************/  
 
 static final int numPlayer = 2;
+
+static final int MAX_PLAYER = 4;
+
 /*************************************************************************************************/
 
 static final int MODE_NONE = 0;
@@ -32,6 +35,13 @@ static final int MODE_PLAYERA = 1;
 static final int MODE_PLAYERB = 2;
 static final int MODE_OTHER  = 3;
 static final int MODE_OVER   = 4;
+
+
+/*************************************************************************************************/
+
+static final int AO_NONE = 0;
+static final int AO_OTHER = 1;
+static final int AO_PLAYER = 2;
 
 
 /*************************************************************************************************/
@@ -62,7 +72,11 @@ public void newGame() {
   
   initScreenGame();
 
-  playerActual = 1;
+  for ( int i=0; i<numPlayer; i++ ) {
+     showMiniForm( i, playerSDs[i], AO_NONE );
+  }
+
+  playerActual = 0;
   
   newTurn();
 
@@ -76,25 +90,44 @@ public void newTurn() {
   
   gameMode = MODE_PLAYERA;
 
-  initForm( playerSDs[playerActual-1] );
+  initForm( playerSDs[playerActual] );
   btnPlay.setCaptionLabel( "  Player " );
+  showMiniForm( playerActual, playerSDs[playerActual], AO_PLAYER );
   
   hasSetAField = false;
 
-  playerOther = 1;
-  if ( playerOther == playerActual ) {
-    playerOther++;
-  }
+  playerOther = -1;
 }
 
 /*************************************************************************************************/
 
-public void newOther() {
+public boolean newOther() {
+
+  if ( playerOther == -1 ) {
+    updateSData( playerSDs[playerActual] );
+    showMiniForm( playerActual, playerSDs[playerActual], AO_PLAYER );
+  } else {
+    updateSData( playerSDs[playerOther] );
+    showMiniForm( playerOther, playerSDs[playerOther], AO_NONE );
+  }
+
+  playerOther++;
+  if ( playerOther == playerActual ) {
+    playerOther++;
+  }
+
+  if ( playerOther >= numPlayer ) {
+    showMiniForm( playerActual, playerSDs[playerActual], AO_NONE );
+    return false;
+  }
 
   gameMode = MODE_OTHER;
-  initForm( playerSDs[playerOther-1] );
-  btnPlay.setCaptionLabel( "  Other " + playerOther );
 
+  initForm( playerSDs[playerOther] );
+  btnPlay.setCaptionLabel( "  Other " + playerOther );
+  showMiniForm( playerOther, playerSDs[playerOther], AO_OTHER );
+
+  return true;
 }
 
 /*************************************************************************************************/
@@ -123,33 +156,23 @@ public void btnPlayStep(int theValue) {
     case MODE_PLAYERB: 
       // TODO: check player has finished
       if ( hasSetAField ) {
-        updateSData( playerSDs[playerActual-1] );
         newOther();
       }
       break;
       
     case MODE_OTHER: 
-      updateSData( playerSDs[playerOther-1] );
-
-      playerOther++;
-      if ( playerOther == playerActual ) {
-        playerOther++;
-      }
-
-      if ( playerOther <= numPlayer ) {
-        newOther();
-      } else {
+      if ( ! newOther() ) {
         playerActual++;
-        if ( playerActual > numPlayer ) {
-          playerActual = 1;
+        if ( playerActual >= numPlayer ) {
+          playerActual = 0;
         }   
    
         // Check for ENDE
-       if ( gameEnded() ) {
-         endGame();
-       } else {
-         newTurn();
-       }
+        if ( gameEnded() ) {
+          endGame();
+        } else {
+          newTurn();
+        }
       }
       break;
       
@@ -209,7 +232,7 @@ public void handleFormToggle( PicToggle pt ) {
 
           // Kreuz passt zum Wuerfel check for last field
           } else if ( fld == 10 ) {
-            if ( playerSDs[playerActual-1].allowEnd( fcol ) ) {
+            if ( playerSDs[playerActual].allowEnd( fcol ) ) {
               // wenn letztes Feld dann auch Ende setzen 
               println("mark 11 " + fcol);
               setField( ptMark[fcol][11], true );
@@ -227,7 +250,7 @@ public void handleFormToggle( PicToggle pt ) {
 
         // Kreuz passt zum Wuerfel (weiss) check for last field
         } else if ( fld == 10 ) {
-          if ( playerSDs[playerActual-1].allowEnd( fcol ) ) {
+          if ( playerSDs[playerActual].allowEnd( fcol ) ) {
             // wenn letztes Feld dann auch Ende setzen 
               println("mark 11b " + fcol);
             setField( ptMark[fcol][11], true );
@@ -254,7 +277,7 @@ public void handleFormToggle( PicToggle pt ) {
       } else {
         // field is resetted
         hasSetAField = false;
-        initForm( playerSDs[playerActual-1] );
+        initForm( playerSDs[playerActual] );
       }
       break;          
           
@@ -275,7 +298,7 @@ public void handleFormToggle( PicToggle pt ) {
           // also zurück
           resetField( pt );
 
-        } else if ( ( fld == 10 ) && ( ! playerSDs[playerActual-1].allowEnd( fcol ) ) ){
+        } else if ( ( fld == 10 ) && ( ! playerSDs[playerActual].allowEnd( fcol ) ) ){
           // fld 10 war nicht erlaubt
           resetField( pt );
 
@@ -292,13 +315,13 @@ public void handleFormToggle( PicToggle pt ) {
       // reset   
       } else if ( ( fcol == playerStore1FCol ) && ( fld == playerStore1Fld ) ) {
         // A field is resetted
-        initForm( playerSDs[playerActual-1] );
+        initForm( playerSDs[playerActual] );
         hasSetAField = false;
         gameMode = MODE_PLAYERA;
 
       } else {
         // B field is resetted
-        initForm( playerSDs[playerActual-1] );
+        initForm( playerSDs[playerActual] );
         setField( ptMark[playerStore1FCol][playerStore1Fld], true );
 
       }
@@ -313,7 +336,7 @@ public void handleFormToggle( PicToggle pt ) {
 
         // Kreuz passt zum Wuerfel check for last field
         } else if ( fld == 10 ) {
-          if ( playerSDs[playerOther-1].allowEnd( fcol ) ) {
+          if ( playerSDs[playerOther].allowEnd( fcol ) ) {
             // wenn letztes Feld dann auch Ende setzen 
             setField( ptMark[fcol][11], true );
           } else {
@@ -326,7 +349,7 @@ public void handleFormToggle( PicToggle pt ) {
         }        
       } else {
         // field is resetted
-        initForm( playerSDs[playerOther-1] );
+        initForm( playerSDs[playerOther] );
       }
       break;
   }

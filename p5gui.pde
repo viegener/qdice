@@ -35,6 +35,9 @@ import javax.swing.*;
 
 import controlP5.*;
 
+
+
+
 /*************************************************************************************************/
 /****************  All Controls are currently Global                                       *******/
 /*************************************************************************************************/
@@ -45,6 +48,7 @@ Tab tabDefault;
 Tab tabEnd; 
 
 PImage qpage, qmpage, qepage, qspage;
+PImage rainbow;
 
 PImage don, doff, aon, aoff;
 PImage fdon, fdoff, faon, faoff;
@@ -56,10 +60,8 @@ PicToggle txtW1;
 PicToggle txtW2, txtR, txtG, txtB, txtY;
 
 Button btnPlay, btnForm;
+Button btnSForms[];
 
-// TODO
-SData gsd;
-PGraphics gpg;
 
 boolean initForm;
 
@@ -88,8 +90,10 @@ static final int offsetXf = 21+5;
 static final int formSizeX = 600;
 static final int formSizeY = 400;
 
-static final int qsSizeX = formSizeX/4;
-static final int qsSizeY = formSizeY/4;
+static final int qmSizeX = formSizeX/4;
+static final int qmSizeY = formSizeY/4;
+
+static final int padSize = 10;
 
 static final String pt_base = "pt"; 
 
@@ -98,6 +102,9 @@ static final String pt_base = "pt";
 /*************************************************************************************************/
 
 public void initializeGUI() {
+  int posX, posY;
+  String ptName;
+
   size(1000, 550);
   frameRate(30); 
   frame.setTitle(MYQDICE_PARSER_COPYRIGHT);
@@ -115,6 +122,8 @@ public void initializeGUI() {
   faoff = loadImage("failactive-off.png"); 
   fdon = loadImage("fail-on.png");
   faon = loadImage("failactive-on.png");
+
+  rainbow = loadImage("rainbow.png");
 
   cp5 = new ControlP5(this, pfont); 
 
@@ -145,8 +154,8 @@ public void initializeGUI() {
   qspage = loadImage( "qdice-splash.png" );
   qspage.resize( formSizeX, formSizeY );
 
-  qmpage = loadImage( "qdice-small.png" );
-  qmpage.resize( qsSizeX, qsSizeY );
+  qmpage = loadImage( "qdice-mini.png" );
+  qmpage.resize( qmSizeX, qmSizeY );
 
   btnForm = cp5.addButton("btnForm")
      .setPosition(formOffsetX, formOffsetY )
@@ -155,14 +164,18 @@ public void initializeGUI() {
      .moveTo( tabDefault )
      ;
 
-/*     
-  cp5.addButton("btnForm2")
-     .setPosition(formOffsetX+650, formOffsetY )
-     .setSize(qspage.width, qspage.height)
-     .setImage( qspage )
-     .moveTo( tabDefault )
-     ;
-*/
+  btnSForms = new Button[MAX_PLAYER];
+  posY = formOffsetY-(MAX_PLAYER * padSize / 2);
+  for ( int i=0; i< MAX_PLAYER; i++ ) {
+    btnSForms[i] = cp5.addButton("btnSForms" + i)
+       .setPosition(formOffsetX+formSizeX + padSize, posY  )
+       .setSize(qmpage.width + padSize, qmpage.height + padSize)
+       .setImage( qmpage )
+       .hide()
+       .moveTo( tabDefault )
+       ;
+    posY += qmpage.height + padSize; 
+    }
 
   initForm = true;
 
@@ -170,9 +183,6 @@ public void initializeGUI() {
 
   ptMark = new PicToggle[4][12];
   ptFail= new PicToggle[4];
-
-  int posX, posY;
-  String ptName;
 
   /* add marks */
   posY = startY;
@@ -215,28 +225,6 @@ public void initializeGUI() {
   }
 
   initForm = false;
-
-  /*** add form buttons */
-  cp5.addButton("btnFill")
-     .setPosition(300, 10 )
-     .setSize(40, 20)
-     .setCaptionLabel( " Fill " )
-     .moveTo( tabDefault )
-     ;
-
-  cp5.addButton("btnStore")
-     .setPosition(350, 10 )
-     .setSize(40, 20)
-     .setCaptionLabel( " Store " )
-     .moveTo( tabDefault )
-     ;
-
-  cp5.addButton("btnClear")
-     .setPosition(400, 10 )
-     .setSize(40, 20)
-     .setCaptionLabel( " Clear " )
-     .moveTo( tabDefault )
-     ;
 
   /***********************************************/
 
@@ -360,6 +348,10 @@ public void initScreenSplash() {
 
   btnForm.setImage( qspage );  
 
+  for ( int i=0; i< numPlayer; i++ ) {
+    btnSForms[i].hide();
+  }
+  
   resetForm();
 }
 
@@ -368,6 +360,10 @@ public void initScreenGame() {
 
   btnForm.setImage( qpage );  
 
+  for ( int i=0; i< numPlayer; i++ ) {
+    btnSForms[i].show();
+  }
+  
 }
 
 public void initScreenEnd() {
@@ -388,6 +384,10 @@ public void initScreenEnd() {
 
   btnForm.setImage( pg );  
 
+  for ( int i=0; i< numPlayer; i++ ) {
+    btnSForms[i].show();
+  }
+
   resetForm();
 
 }
@@ -398,46 +398,30 @@ public void initScreenEnd() {
 /****************  Handle Buttons                                                          *******/
 /*************************************************************************************************/
 
-/*************************************************************************************************/
-public void btnClear(int theValue) {
-  gsd = new SData("test");
-  initForm( gsd );
-}
- 
-/*************************************************************************************************/
-public void btnStore(int theValue) {
-  updateSData( gsd );
 
-  gpg = makeSPage( gsd );
+/* nothing */
 
-  Dice d = new Dice();
-  d.roll();
-  showDice( d );
-}
- 
- 
-/*************************************************************************************************/
-public void btnFill(int theValue) {
-  initForm( gsd );
-  gpg = null;
-}
- 
- 
 /*************************************************************************************************/
 /****************  PGraphics for small qpage                                               *******/
 /*************************************************************************************************/
 
+// 0 - inactive / 1 - other / 2 - player
 
-public PGraphics makeSPage( SData sd ) {
-  PGraphics pg = createGraphics( qsSizeX, qsSizeY );
+public void showMiniForm( int plid, SData sd, int activeOther ) {
+  btnSForms[plid].setImage( makeMPage(sd, activeOther) );
+}
+
+
+public PGraphics makeMPage( SData sd, int activeOther  ) {
+  PGraphics pg = createGraphics( qmSizeX+padSize, qmSizeY+padSize);
   
-  int stx = ((startX-formOffsetX) / 4)+1;
-  int sty = ((startY-formOffsetY) / 4)+1;
+  int stx = ((startX-formOffsetX) / 4)+1 + (padSize/2);
+  int sty = ((startY-formOffsetY) / 4)+1 + (padSize/2);
   
-  int stfx = ((startXf-formOffsetX) / 4)+1;
-  int stfy = ((startYf-formOffsetY) / 4)+1;
+  int stfx = ((startXf-formOffsetX) / 4)+1 + (padSize/2);
+  int stfy = ((startYf-formOffsetY) / 4)+1 + (padSize/2);
   
-  int ox = ((offsetX) / 4)+1;
+  int ox = ((offsetX) / 4);
   int oy = ((offsetY) / 4)+1;
   
   int ofx = ((offsetXf) / 4);
@@ -449,8 +433,15 @@ public PGraphics makeSPage( SData sd ) {
   
   pg.beginDraw();
   
-  pg.image(qmpage, 0,0, qsSizeX, qsSizeY);
-  pg.resize( qsSizeX, qsSizeY );
+  if ( activeOther == AO_PLAYER ) {
+    pg.image(rainbow, 0, 0, qmSizeX+padSize, qmSizeY+padSize );
+  } else if ( activeOther == AO_OTHER ) {
+    pg.background( 0xFFDDDDDD );
+  } else {
+    pg.background( 0xff022020);
+  }
+  
+  pg.image(qmpage, padSize/2,padSize/2, qmSizeX, qmSizeY);
 
   posY = sty;
 
@@ -642,10 +633,11 @@ public void updateSData( SData sd ) {
 void draw() {
   // dark background
   background(0xff022020);
+  /*
   if ( gpg != null ) {
     image( gpg, formOffsetX+650, formOffsetY );
   }
-//  image( qspage, 
+  */
 } // end void draw  
 
 

@@ -42,19 +42,23 @@ static final String MYQDICE_PARSER_COPYRIGHT = "Copyright (C) 2014 by Johannes V
 
 
 TODO
-- show small forms as graphics
-- remove action buttons
+- calibrate small forms - crosses smaller and more central
 - add text for Player
-- add visual for showing which player is on
 - move play button on small forms
 - special case white mark is making 5th mark in color-allow end mark
 
 - switchable und set ist rot nicht schwarz
 - würfel icons
-- calc points
 - dynamic player count
 - android test
 
+** 4.7. 
+- new splash screen
+- clean up Game module
+- add mini forms
+- miniForms for player
+- remove action buttons
+- add visual for showing which player is on
 
 ** 3.7. Complete game
 - complete general game flow
