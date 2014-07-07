@@ -559,6 +559,44 @@ public void initForm( SData sd ) {
 
 
 /*************************************************************************************************/
+/****************  UPdate Form from Option                                                 *******/
+/*************************************************************************************************/
+
+public void updateForm( Option move ) {
+  initForm = true;
+
+  if ( move.isNone() ) {
+    return;
+  } else if ( move.isFail() ) {
+    for ( int i=0; i<4; i++ ) {
+      if ( ! ptFail[i].getState() ) {
+        ptFail[i].setState( true );
+        return;
+      }
+    }
+  } else {
+    ptMark[move.color1][move.field1].setState( true );
+    if ( move.isFinal1() ) {
+      ptMark[move.color1][move.field1+1].setSwitchable( true );
+      ptMark[move.color1][move.field1+1].setState( true );
+      ptMark[move.color1][move.field1+1].setSwitchable( false );
+    }
+
+    if ( move.isDouble() ) {
+      ptMark[move.color2][move.field2].setState( true );
+      if ( move.isFinal2() ) {
+        ptMark[move.color2][move.field2+1].setSwitchable( true );
+        ptMark[move.color2][move.field2+1].setState( true );
+        ptMark[move.color2][move.field2+1].setSwitchable( false );
+      }
+    }
+
+  }
+
+  initForm = false;
+}
+
+/*************************************************************************************************/
 /****************  reset Form                                                              *******/
 /*************************************************************************************************/
 

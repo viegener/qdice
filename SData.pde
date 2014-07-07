@@ -29,6 +29,8 @@ static final int idxGre = 2;
 static final int idxBlu = 3;
 
 static final int idxFail = 4;
+static final int idxRows = 4;
+static final int idxNone = -1;
 
 
 boolean sDataEnd[] = new boolean[ idxFail+1 ];
@@ -149,6 +151,31 @@ public class SData extends Object {
     return ( countMarks( fcol ) >= 5 );
   } 
   
+  public boolean allowSet( int fcol, int fld, int fcolSet, int fldSet ) {
+    int cx = 0; 
+
+    for ( int j=fld; j<11; j++ ) {
+      if (  mark[fcol][j] ) {
+        return false;
+      }
+    }
+    
+    if ( ( fcolSet == fcol ) && ( fldSet >= fld ) ) {
+        return false;
+    }  
+
+    if ( fld == 10 ) {
+      return allowEnd( fcol );
+    }
+
+    return true;
+  } 
+  
+  public boolean allowSet( int fcol, int fld ) {
+    return allowSet( fcol, fld, -1, -1 );
+  } 
+  
+
   public int countMarks( int fcol ) {
     int cx = 0; 
 

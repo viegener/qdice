@@ -158,9 +158,17 @@ public void playNextStep() {
       
     case MODE_PLAYERA: 
     case MODE_PLAYERB: 
-      // TODO: check player has finished
+      // heck player has finished
       if ( hasSetAField ) {
         newOther();
+
+          if ( playerOther == playerAI ) {
+          AIMove ai = new AIMove( playerSDs[playerOther] , d, false ); 
+          Option move = ai.calcEvaluation();
+          updateForm( move );
+          playNextStep();
+        }
+
       }
       break;
       
@@ -176,6 +184,14 @@ public void playNextStep() {
           endGame();
         } else {
           newTurn();
+
+          if ( playerActual == playerAI ) {
+            AIMove ai = new AIMove( playerSDs[playerActual] , d, true ); 
+            Option move = ai.calcEvaluation();
+            updateForm( move );
+            hasSetAField = true;
+            playNextStep();
+          }
         }
       }
       break;
@@ -185,6 +201,9 @@ public void playNextStep() {
       break;
       
   }
+
+  
+
 
 }
  
