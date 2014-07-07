@@ -290,8 +290,6 @@ public void initializeGUI() {
        .moveTo( tabDefault )
        ;
     posX += diceSize + padSize; 
-    picDices[i] = loadImage( "dice-" + i + ".png" );
-    qepage.resize( formSizeX, formSizeY );
   }
 
 

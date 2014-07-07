@@ -28,10 +28,10 @@ static final int idxYel = 1;
 static final int idxGre = 2;
 static final int idxBlu = 3;
 
-static final int idxStr = 4;
+static final int idxFail = 4;
 
 
-boolean sDataEnd[] = new boolean[ idxStr+1 ];
+boolean sDataEnd[] = new boolean[ idxFail+1 ];
 
 
 /*************************************************************************************************/
