@@ -189,6 +189,7 @@ public void playNextStep() {
 }
  
  
+ 
 /*************************************************************************************************/
 /****************  handle Form changes                                                     *******/
 /*************************************************************************************************/
@@ -207,15 +208,7 @@ public void handleFormToggle( PicToggle pt ) {
   int fcol = pt.getFColor();
   int fld = pt.geField();
   
-  int dval;
-  if ( fcol < 2 ) {
-    dval = fld + 2;
-  } else if ( fcol < 4 ) {
-    dval = 12-fld;
-  } else {
-    dval = -1;
-  }
-
+  int dval = calcValue( fcol, fld );
 
   switch( gameMode ) {
       

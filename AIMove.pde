@@ -63,16 +63,16 @@ public class Option extends Object {
   }
 
   public boolean isFinal() {
-    return (isFinal1() || is Final2());
+    return (isFinal1() || isFinal2());
   }
 
 
   public boolean isFinal1() {
-    return (fld1 == 10);
+    return (field1 == 10);
   }
 
   public boolean isFinal2() {
-    return (fld2 == 10);
+    return (field2 == 10);
   }
 
   public boolean isDouble() {
@@ -91,11 +91,23 @@ public class Option extends Object {
 /****************************************************************************************************************/
 
 public class AIMOve extends Object {
+    // ATTENTION: values must be converted to fields first depending on color row
+    
+    Option moves[];  
+    int ctMoves;
+    int dval;
   
     public AIMOve( SData sd, Dice d, boolean isActual ) {
-      // calculate all possible options based on current sd and dices ???
+      // calculate all possible options based on current sd and dices 
+      moves = new Option[45];
+      ctMoves = 0;
      
       // First option is to set fail
+      moves[0] = new Option();
+      ctMoves++;
+      
+      // check the white dices
+//      dval = 
       
     }
   

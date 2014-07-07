@@ -54,6 +54,38 @@ public boolean gameEnded() {
 }
     
 
+/*************************************************************************************************/
+/****************  convert field to dice values                                            *******/
+/*************************************************************************************************/
+
+public int calcValue( int fcol, int fld ) { 
+  int dval;
+  if ( fcol < 2 ) {
+    dval = fld + 2;
+  } else if ( fcol < 4 ) {
+    dval = 12-fld;
+  } else {
+    dval = -1;
+  }
+  return dval;
+}
+
+
+public int calcField( int fcol, int value ) { 
+  int fld;
+
+  if ( fcol < 2 ) {
+    fld = value - 2; 
+  } else if ( fcol < 4 ) {
+    fld = 12-value; 
+  } else {
+    fld = -1;
+  }
+  return fld;
+}
+
+
+
 
 /****************************************************************************************************************/
 /*****************                                                                                ***************/
@@ -160,5 +192,6 @@ public class SData extends Object {
 
 
   }
+ 
   
 }

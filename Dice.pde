@@ -62,6 +62,56 @@ public class Dice extends Object {
     return (w1 + w2);
   }
 
+
+
+  public int getField( int fcol, boolean takeW1 ) {
+    // TODO
+    return -1;
+  }
+
+
+  public int getValue1( int fcol ) {
+    int cold = 0;
+    
+    switch( fcol ) {
+      case 0:
+        cold = r;
+        break;
+      case 1:
+        cold = y;
+        break;
+      case 2:
+        cold = g;
+        break;
+      case 3:
+        cold = b;
+        break;
+    }    
+    return ( w1 + cold );    
+  }
+
+
+  public int getValue2( int fcol ) {
+    int cold = 0;
+    
+    switch( fcol ) {
+      case 0:
+        cold = r;
+        break;
+      case 1:
+        cold = y;
+        break;
+      case 2:
+        cold = g;
+        break;
+      case 3:
+        cold = b;
+        break;
+    }    
+    return ( w2 + cold );    
+  }
+
+
   public boolean isColorValue(int fcol, int dval) {
     int cold = 0;
     
