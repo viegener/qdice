@@ -49,8 +49,7 @@ import processing.event.KeyEvent;
 /*************************************************************************************************/
 
 public class PicBaseToggle extends Toggle {
-
-  boolean switchable = true;
+  boolean nonSwitchable = false;
 
   public PicBaseToggle(ControlP5 theControlP5, String theName) {
     super( theControlP5, theName );
@@ -58,35 +57,31 @@ public class PicBaseToggle extends Toggle {
 
 
   public PicBaseToggle setState(boolean theFlag) { 
-    if ( switchable ) {
-      super.setState( theFlag );
-    } else {
+    if ( nonSwitchable ) {
       println("ERR >>> Not switchable ");
+    } else {
+      super.setState( theFlag );
     }
    return this;
   }
   
   public PicBaseToggle forceState(boolean theFlag) { 
-    super.setState( theFlag );
+   super.setState( theFlag );
    return this;
   }
   
   public PicBaseToggle setSwitchable( boolean theSW ) {
-    switchable = theSW;
+   nonSwitchable = ! theSW;
    return this;
   }
 
-  public boolean getSwitchable( ) {
-   return switchable;
+  public boolean isSwitchable( ) {
+   return ! nonSwitchable;
   }
 
   protected void updateFont(ControlFont theControlFont) {
     _myCaptionLabel.updateFont(theControlFont);
   } 
-  public boolean isSwitchable() {
-    return switchable;
-  }
-
   
    public PicBaseToggle updateDisplayMode(int theState) {
     if ( theState == IMAGE ) {
@@ -100,7 +95,7 @@ public class PicBaseToggle extends Toggle {
   class PicBaseToggleImageView implements ControllerView<Toggle> {
 
     public void display(PApplet theApplet, Toggle theController) {
-      if (getIsInside() && switchable) {
+      if (getIsInside() && ( ! nonSwitchable) ) {
         if (isOn) {
           theApplet.image( (availableImages[HIGHLIGHT] == true) ? images[HIGHLIGHT] : images[DEFAULT], 0, 0);
         }

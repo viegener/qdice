@@ -25,8 +25,20 @@
 
 static final int NO_EVAL = -100000;
 
-static final int playerAI = 1;
+static final int playerAI1 = 1;
+static final int playerAI2 = -1;
 // static final int playerAI = -1;
+
+/****************************************************************************************************************/
+
+boolean isAIPlayer( int aPlayer ) {
+  if ( aPlayer ==  playerAI1 ) {
+    return true;
+  } else if ( aPlayer ==  playerAI2) {
+    return true;
+  }
+  return false;
+}
 
 /****************************************************************************************************************/
 /*****************                                                                                ***************/
@@ -187,8 +199,8 @@ public class AIMove extends Object {
   
     }
     
-     /*********************** Evaluate possible moves ***********************/
-    public Option calcEvaluation() {
+    /*********************** Evaluate possible moves ***********************/
+    public Option calcEvaluation( boolean algm1 ) {
       int bestMove; 
       int bestEval;
       int anEval;
@@ -199,27 +211,32 @@ public class AIMove extends Object {
       // Calculate simple strategy
       
       bestMove = 0;
-      bestEval = evalMove( moves[actMove] );
+      if ( algm1 ) {
+        bestEval = evalMove1( moves[actMove] );
+      } else {
+        bestEval = evalMove2( moves[actMove] );
+      }
       actMove++;
       
       while ( actMove < ctMoves ) {
         actMove++;    
-        anEval = evalMove( moves[actMove] );
+        if ( algm1 ) {
+          anEval = evalMove1( moves[actMove] );
+        } else {
+          anEval = evalMove2( moves[actMove] );
+        }
         if ( anEval > bestEval ) {
           bestMove = actMove;
           bestEval = anEval;
         }
       }
       
-      
      return moves[bestMove];
      }
 
 
-
-    
     /************************+ easy strategy *********************/
-    public int evalMove( Option move ) {
+    public int evalMove1( Option move ) {
       int ct, jump, remFlds, tmpEval;
       int eval = 0;
 
@@ -233,9 +250,12 @@ public class AIMove extends Object {
         if ( move.field1 == 10 ) {
           ct += (ct+1) * 2;
         }
-        jump = move.field1 - sd.lastMark( move.color1 ) - 1;
-        tmpEval = ( ct - ( jump * jump ) );
-        
+        jump = move.field1 - sd.lastMark( move.color1 );
+        if ( isActual ) {
+          tmpEval = ( ct - ( jump * jump ) );
+        } else {
+          tmpEval = ( ct - ( jump * jump * jump ) );
+        }      
         eval += tmpEval;
   
         // eval also remaining fields fi below 5
@@ -248,18 +268,19 @@ public class AIMove extends Object {
             eval += tmpEval;
           }
         }
-  
-  
-  
-  
+    
         if ( move.isDouble() ) { 
           // calc (pts - jump^2) add special value for finalizing
           ct = sd.countMarks( move.color2 );
           if ( move.field2 == 10 ) {
             ct += (ct+1) * 2;
           }
-          jump = move.field2 - sd.lastMark( move.color2 ) - 1;
-          tmpEval = ( ct - ( jump * jump ) );
+          jump = move.field2 - sd.lastMark( move.color2 );
+          if ( isActual ) {
+            tmpEval = ( ct - ( jump * jump ) );
+          } else {
+            tmpEval = ( ct - ( jump * jump * jump ) );
+          }      
           
           eval += tmpEval;
           
@@ -278,6 +299,72 @@ public class AIMove extends Object {
       return eval;
 
     }
+
+    /************************+ easy strategy *********************/
+    public int evalMove2( Option move ) {
+      int ct, jump, remFlds, tmpEval;
+      int eval = 0;
+
+      if (  move.isFail() ) {
+        eval = -20;
+      } else if (  move.isNone() ) {
+        eval = 0;
+      } else {
+        // calc (pts - jump^2) add special value for finalizing
+        ct = sd.countMarks( move.color1 );
+        if ( move.field1 == 10 ) {
+          ct += (ct+1) * 2;
+        }
+        jump = move.field1 - sd.lastMark( move.color1 );
+        if ( isActual ) {
+          tmpEval = ( ct - ( jump * jump ) );
+        } else {
+          tmpEval = ( ct - ( jump * jump * jump ) );
+        }      
+        eval += tmpEval;
+  
+        // eval also remaining fields fi below 5
+        if ( ct < 4 ) {
+          if ( ( ! move.isDouble() ) || ( move.color1 != move.color2 ) ) { 
+            remFlds = 11 - sd.lastMark( move.color1 );
+        
+            tmpEval = ( (remFlds / 2) - ( 4 - ct ) ) * 2;
+  
+            eval += tmpEval;
+          }
+        }
+    
+        if ( move.isDouble() ) { 
+          // calc (pts - jump^2) add special value for finalizing
+          ct = sd.countMarks( move.color2 );
+          if ( move.field2 == 10 ) {
+            ct += (ct+1) * 2;
+          }
+          jump = move.field2 - sd.lastMark( move.color2 );
+          if ( isActual ) {
+            tmpEval = ( ct - ( jump * jump ) );
+          } else {
+            tmpEval = ( ct - ( jump * jump * jump ) );
+          }      
+          
+          eval += tmpEval;
+          
+          // eval also remaining fields fi below 5
+          if ( ct < 4 ) {
+            remFlds = 11 - sd.lastMark( move.color2 );
+        
+            tmpEval = ( (remFlds / 2) - ( 4 - ct ) ) * 2;
+  
+            eval += tmpEval;
+          }
+        }
+      }
+      
+      move.eval = eval;
+      return eval;
+
+    }
+
 
 
 }

@@ -50,7 +50,7 @@ Tab tabEnd;
 PImage qpage, qmpage, qepage, qspage;
 PImage rainbow;
 
-PImage don, doff, aon, aoff;
+PImage don, doff, aon, aoff, coff;
 PImage fdon, fdoff, faon, faoff;
 
 PicToggle ptMark[][];
@@ -147,6 +147,8 @@ public void initializeGUI() {
   fdon = loadImage("fail-on.png");
   faon = loadImage("failactive-on.png");
 
+  coff = loadImage("closed-off.png");
+
   rainbow = loadImage("rainbow.png");
 
   cp5 = new ControlP5(this, pfont); 
@@ -202,8 +204,6 @@ public void initializeGUI() {
     posY += qmpage.height + qmlabelSize + padSize; 
     }
 
-  initForm = true;
-
   PicToggle pt;
 
   ptMark = new PicToggle[4][12];
@@ -211,6 +211,7 @@ public void initializeGUI() {
 
   /* add marks */
   posY = startY;
+  initForm = true;
 
   for ( int i = 0; i < 4; i++ ) {
     posX = startX;
@@ -533,6 +534,12 @@ public void initForm( SData sd ) {
       }
       ptMark[i][j].setSwitchable( setSw );
     }
+    
+    if ( sDataEnd[i] ) {
+      ptMark[i][11].setImage( coff, Controller.DEFAULT );
+    } else {
+      ptMark[i][11].setImage( doff, Controller.DEFAULT );
+    }
     ptMark[i][11].setSwitchable( false );
   }
 
@@ -540,16 +547,16 @@ public void initForm( SData sd ) {
     if ( sd.getFail() > i ) {
       ptFail[i].forceState( true );
       ptFail[i].setSwitchable( false );
-    } if ( sd.getFail() == i ) {
+    } else if ( sd.getFail() == i ) {
       ptFail[i].forceState( false );
       ptFail[i].setSwitchable( true );
     } else {
-      ptFail[i].forceState( false );
+        ptFail[i].forceState( false );
       ptFail[i].setSwitchable( false );
     }
     if ( gameMode == MODE_OTHER ) {
       ptFail[i].setSwitchable( false );
-    }  
+    } 
   }
 
   initForm = false;
@@ -596,12 +603,13 @@ public void updateForm( Option move ) {
 
 public void resetForm( ) {
   initForm = true;
-
+  
   for ( int i=3; i>=0; i-- ) {
     for ( int j=11; j>=0; j-- ) {
       ptMark[i][j].forceState( false );
       ptMark[i][j].setSwitchable( false );
     }
+    ptMark[i][11].setImage( doff, Controller.DEFAULT );
   }
 
   for ( int i=0; i<4; i++ ) {
@@ -640,7 +648,7 @@ public void resetField( PicToggle pt  ) {
   
 public void setField( PicToggle pt, boolean value  ) {
   initForm = true;
-  boolean ss = pt.getSwitchable();
+  boolean ss = pt.isSwitchable();
   pt.setSwitchable( true );
   pt.setState( value );
   pt.setSwitchable( ss );
@@ -662,10 +670,6 @@ public void updateSData( SData sd ) {
         }
 //      }
     }
-    if ( ptMark[i][11].getState() ) {
-      sDataEnd[i] = true;
-    }
-    
   }
 
   for ( int i=0; i<4; i++ ) {
@@ -674,10 +678,6 @@ public void updateSData( SData sd ) {
         sd.incFail();
       }
     }
-  }
-
-  if ( sd.getFail() == 4 ) {
-    sDataEnd[4] = true;
   }
 
 }

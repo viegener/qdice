@@ -120,6 +120,12 @@ public boolean newOther() {
 
   if ( playerOther >= numPlayer ) {
     showMiniForm( playerActual, playerSDs[playerActual], AO_NONE );
+
+    // all players moved, so eval if any row is ended
+    for ( int i=0; i<numPlayer; i++ ) {
+       playerSDs[i].updateDataEnd();
+    }
+
     return false;
   }
 
@@ -140,8 +146,6 @@ public void endGame() {
 
   gameMode = MODE_OVER;
   
-  
-
 }
 
 
@@ -151,7 +155,7 @@ public void endGame() {
 public void makeAIMove( SData sd, Dice d, boolean isActual ) { 
   AIMove ai = new AIMove( sd , d, isActual ); 
 
-  Option move = ai.calcEvaluation();
+  Option move = ai.calcEvaluation(true);
 
   updateForm( move );
 
@@ -171,16 +175,16 @@ public void makeAIMove( SData sd, Dice d, boolean isActual ) {
 }
 
 
-
-
-
-
 /*************************************************************************************************/
 public void playNextStep() {
-
+ 
   switch( gameMode ) {
     case MODE_NONE: 
       newGame();
+      if ( isAIPlayer( playerActual ) ) {
+          makeAIMove( playerSDs[playerActual] , d, true ); 
+          playNextStep();
+        }
       break;
       
     case MODE_PLAYERA: 
@@ -189,7 +193,7 @@ public void playNextStep() {
       if ( hasSetAField ) {
         newOther();
 
-        if ( playerOther == playerAI ) {
+        if ( isAIPlayer( playerOther ) ) {
           makeAIMove( playerSDs[playerOther] , d, false ); 
           playNextStep();
         }
@@ -199,11 +203,13 @@ public void playNextStep() {
       
     case MODE_OTHER: 
       if ( newOther() ) {
-        if ( playerOther == playerAI ) {
+        if ( isAIPlayer( playerOther ) ) {
           makeAIMove( playerSDs[playerOther] , d, false ); 
           playNextStep();
         }
       } else {
+        // eval end
+
         playerActual++;
         if ( playerActual >= numPlayer ) {
           playerActual = 0;
@@ -215,7 +221,7 @@ public void playNextStep() {
         } else {
           newTurn();
 
-          if ( playerActual == playerAI ) {
+          if ( isAIPlayer( playerActual ) ) {
             makeAIMove( playerSDs[playerActual] , d, true ); 
             playNextStep();
           }
@@ -225,12 +231,12 @@ public void playNextStep() {
       
     case MODE_OVER: 
       newGame();
+      if ( isAIPlayer( playerActual ) ) {
+          makeAIMove( playerSDs[playerActual] , d, true ); 
+          playNextStep();
+        }
       break;
-      
   }
-
-  
-
 
 }
  

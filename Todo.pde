@@ -42,31 +42,26 @@ static final String MYQDICE_PARSER_COPYRIGHT = "Copyright (C) 2014 by Johannes V
 
 
 TODO
-- add mark for closed lines
+- AI: adapt AI to add more fine for jumps when other player
+- AI: add multi KI
+
 - select number of players / KIs
-- add multi KI
 - add auto mode KI against KI with log file
 
-
 - add hints for possible moves
-    - prio 1 ist abschliessen - wenn gute punktzahl
-    - prio 2 versuche so nah wir moeglich - 0 dist (1 dist akzaptabel / 2-dist nur wenn nicht zu oft und noch gut Platz)
-    - prio 3 versuche beide Wuerfel als aktiver spieler zu setzen (aber nur mit guten / max akzeptablen werten)
-    Versuche gute Verteilung zu bekommen - d.h also moeglichst viele Zahlen nutzbar
-    Bei wenig platz akzeptiere nur noch 0-dist
     
-- add kI
-
-- switchable und set ist rot nicht schwarz
 - dynamic player count
 - android test
 - store game for resume
 - quit game
 
 ** 8.7.
-- implemented basic KI
+- implemented initial KI
 - 2 player mode with KI
-
+- AI: increase jump fine
+- add mark for closed lines
+- FIX: Fail marks not shown in form
+- automode - all players KI is possible
 
 ** 4.7. 
 - new splash screen

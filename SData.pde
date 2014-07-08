@@ -56,6 +56,7 @@ public boolean gameEnded() {
 }
     
 
+
 /*************************************************************************************************/
 /****************  convert field to dice values                                            *******/
 /*************************************************************************************************/
@@ -151,6 +152,19 @@ public class SData extends Object {
     return ( countMarks( fcol ) >= 5 );
   } 
   
+
+  public void updateDataEnd() {
+    for ( int i=0; i<4; i++ ) {
+      if (  mark[i][11] ) {
+        sDataEnd[i] = true;
+      }
+    }
+    if ( getFail() == 4 ) {
+      sDataEnd[4] = true;
+    }
+  }
+
+
   public boolean allowSet( int fcol, int fld, int fcolSet, int fldSet ) {
     int cx = 0; 
     if ( sDataEnd[fcol] ) {
