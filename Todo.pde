@@ -42,6 +42,12 @@ static final String MYQDICE_PARSER_COPYRIGHT = "Copyright (C) 2014 by Johannes V
 
 
 TODO
+- add mark for closed lines
+- select number of players / KIs
+- add multi KI
+- add auto mode KI against KI with log file
+
+
 - add hints for possible moves
     - prio 1 ist abschliessen - wenn gute punktzahl
     - prio 2 versuche so nah wir moeglich - 0 dist (1 dist akzaptabel / 2-dist nur wenn nicht zu oft und noch gut Platz)
@@ -56,6 +62,11 @@ TODO
 - android test
 - store game for resume
 - quit game
+
+** 8.7.
+- implemented basic KI
+- 2 player mode with KI
+
 
 ** 4.7. 
 - new splash screen

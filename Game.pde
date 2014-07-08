@@ -147,25 +147,50 @@ public void endGame() {
 
 /*************************************************************************************************/
 
+
+public void makeAIMove( SData sd, Dice d, boolean isActual ) { 
+  AIMove ai = new AIMove( sd , d, isActual ); 
+
+  Option move = ai.calcEvaluation();
+
+  updateForm( move );
+
+  if ( isActual ) {
+    print("BEST ACTUAL ");
+    hasSetAField = true;
+  } else {
+    print("BEST OTHER  ");
+  }
+
+  print( move.color1 + ":" + move.field1 );
+  if ( move.isDouble() ) {
+    print( "   " + move.color2 + ":" + move.field2 );
+  }
+  println("   = " + move.eval );
+
+}
+
+
+
+
+
+
 /*************************************************************************************************/
 public void playNextStep() {
 
   switch( gameMode ) {
     case MODE_NONE: 
       newGame();
-//      endGame();
       break;
       
     case MODE_PLAYERA: 
     case MODE_PLAYERB: 
-      // heck player has finished
+      // actual player has finished
       if ( hasSetAField ) {
         newOther();
 
-          if ( playerOther == playerAI ) {
-          AIMove ai = new AIMove( playerSDs[playerOther] , d, false ); 
-          Option move = ai.calcEvaluation();
-          updateForm( move );
+        if ( playerOther == playerAI ) {
+          makeAIMove( playerSDs[playerOther] , d, false ); 
           playNextStep();
         }
 
@@ -173,23 +198,25 @@ public void playNextStep() {
       break;
       
     case MODE_OTHER: 
-      if ( ! newOther() ) {
+      if ( newOther() ) {
+        if ( playerOther == playerAI ) {
+          makeAIMove( playerSDs[playerOther] , d, false ); 
+          playNextStep();
+        }
+      } else {
         playerActual++;
         if ( playerActual >= numPlayer ) {
           playerActual = 0;
         }   
    
-        // Check for ENDE
+        // Check for END
         if ( gameEnded() ) {
           endGame();
         } else {
           newTurn();
 
           if ( playerActual == playerAI ) {
-            AIMove ai = new AIMove( playerSDs[playerActual] , d, true ); 
-            Option move = ai.calcEvaluation();
-            updateForm( move );
-            hasSetAField = true;
+            makeAIMove( playerSDs[playerActual] , d, true ); 
             playNextStep();
           }
         }

@@ -153,6 +153,10 @@ public class SData extends Object {
   
   public boolean allowSet( int fcol, int fld, int fcolSet, int fldSet ) {
     int cx = 0; 
+    if ( sDataEnd[fcol] ) {
+        return false;
+    }  
+
 
     for ( int j=fld; j<11; j++ ) {
       if (  mark[fcol][j] ) {
@@ -186,6 +190,16 @@ public class SData extends Object {
     }
     
     return cx; 
+  } 
+  
+  public int lastMark( int fcol ) {
+    for ( int j=10; j>=0; j-- ) {
+      if (  mark[fcol][j] ) {
+        return j;
+      }
+    }
+    
+    return -1; 
   } 
   
   

@@ -220,15 +220,62 @@ public class AIMove extends Object {
     
     /************************+ easy strategy *********************/
     public int evalMove( Option move ) {
-      if (  move.isFail() ) {
-        return -20;
-      }
+      int ct, jump, remFlds, tmpEval;
+      int eval = 0;
 
-      if (  move.isNone() ) {
-        return 0;
+      if (  move.isFail() ) {
+        eval = -20;
+      } else if (  move.isNone() ) {
+        eval = 0;
+      } else {
+        // calc (pts - jump^2) add special value for finalizing
+        ct = sd.countMarks( move.color1 );
+        if ( move.field1 == 10 ) {
+          ct += (ct+1) * 2;
+        }
+        jump = move.field1 - sd.lastMark( move.color1 ) - 1;
+        tmpEval = ( ct - ( jump * jump ) );
+        
+        eval += tmpEval;
+  
+        // eval also remaining fields fi below 5
+        if ( ct < 4 ) {
+          if ( ( ! move.isDouble() ) || ( move.color1 != move.color2 ) ) { 
+            remFlds = 11 - sd.lastMark( move.color1 );
+        
+            tmpEval = ( (remFlds / 2) - ( 4 - ct ) ) * 2;
+  
+            eval += tmpEval;
+          }
+        }
+  
+  
+  
+  
+        if ( move.isDouble() ) { 
+          // calc (pts - jump^2) add special value for finalizing
+          ct = sd.countMarks( move.color2 );
+          if ( move.field2 == 10 ) {
+            ct += (ct+1) * 2;
+          }
+          jump = move.field2 - sd.lastMark( move.color2 ) - 1;
+          tmpEval = ( ct - ( jump * jump ) );
+          
+          eval += tmpEval;
+          
+          // eval also remaining fields fi below 5
+          if ( ct < 4 ) {
+            remFlds = 11 - sd.lastMark( move.color2 );
+        
+            tmpEval = ( (remFlds / 2) - ( 4 - ct ) ) * 2;
+  
+            eval += tmpEval;
+          }
+        }
       }
       
-      return 10;
+      move.eval = eval;
+      return eval;
 
     }
 

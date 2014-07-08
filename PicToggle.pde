@@ -60,7 +60,14 @@ public class PicBaseToggle extends Toggle {
   public PicBaseToggle setState(boolean theFlag) { 
     if ( switchable ) {
       super.setState( theFlag );
+    } else {
+      println("ERR >>> Not switchable ");
     }
+   return this;
+  }
+  
+  public PicBaseToggle forceState(boolean theFlag) { 
+    super.setState( theFlag );
    return this;
   }
   

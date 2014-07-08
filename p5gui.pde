@@ -527,8 +527,7 @@ public void initForm( SData sd ) {
   for ( int i=3; i>=0; i-- ) {
     boolean setSw = ! sDataEnd[i];
     for ( int j=11; j>=0; j-- ) {
-      ptMark[i][j].setSwitchable( true );
-      ptMark[i][j].setState( sd.getMark( i, j ) );
+      ptMark[i][j].forceState( sd.getMark( i, j ) );
       if ( sd.getMark( i, j ) ) {
         setSw = false;
       }
@@ -538,15 +537,14 @@ public void initForm( SData sd ) {
   }
 
   for ( int i=0; i<4; i++ ) {
-    ptFail[i].setSwitchable( true );
     if ( sd.getFail() > i ) {
-      ptFail[i].setState( true );
+      ptFail[i].forceState( true );
       ptFail[i].setSwitchable( false );
     } if ( sd.getFail() == i ) {
-      ptFail[i].setState( false );
+      ptFail[i].forceState( false );
       ptFail[i].setSwitchable( true );
     } else {
-      ptFail[i].setState( false );
+      ptFail[i].forceState( false );
       ptFail[i].setSwitchable( false );
     }
     if ( gameMode == MODE_OTHER ) {
@@ -570,24 +568,20 @@ public void updateForm( Option move ) {
   } else if ( move.isFail() ) {
     for ( int i=0; i<4; i++ ) {
       if ( ! ptFail[i].getState() ) {
-        ptFail[i].setState( true );
+        ptFail[i].forceState( true );
         return;
       }
     }
   } else {
-    ptMark[move.color1][move.field1].setState( true );
+    ptMark[move.color1][move.field1].forceState( true );
     if ( move.isFinal1() ) {
-      ptMark[move.color1][move.field1+1].setSwitchable( true );
-      ptMark[move.color1][move.field1+1].setState( true );
-      ptMark[move.color1][move.field1+1].setSwitchable( false );
+      ptMark[move.color1][move.field1+1].forceState( true );
     }
 
     if ( move.isDouble() ) {
-      ptMark[move.color2][move.field2].setState( true );
+      ptMark[move.color2][move.field2].forceState( true );
       if ( move.isFinal2() ) {
-        ptMark[move.color2][move.field2+1].setSwitchable( true );
-        ptMark[move.color2][move.field2+1].setState( true );
-        ptMark[move.color2][move.field2+1].setSwitchable( false );
+        ptMark[move.color2][move.field2+1].forceState( true );
       }
     }
 
@@ -605,15 +599,13 @@ public void resetForm( ) {
 
   for ( int i=3; i>=0; i-- ) {
     for ( int j=11; j>=0; j-- ) {
-      ptMark[i][j].setSwitchable( true );
-      ptMark[i][j].setState( false );
+      ptMark[i][j].forceState( false );
       ptMark[i][j].setSwitchable( false );
     }
   }
 
   for ( int i=0; i<4; i++ ) {
-    ptFail[i].setSwitchable( true );
-    ptFail[i].setState( false );
+    ptFail[i].forceState( false );
     ptFail[i].setSwitchable( false );
   }
 
