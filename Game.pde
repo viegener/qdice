@@ -34,7 +34,7 @@ static final int MODE_NONE = 0;
 static final int MODE_PLAYERA = 1;
 static final int MODE_PLAYERB = 2;
 static final int MODE_OTHER  = 3;
-static final int MODE_OVER   = 4;
+static final int MODE_NEXTPLAYER  = 4;
 
 
 /*************************************************************************************************/
@@ -43,6 +43,20 @@ static final int AO_NONE = 0;
 static final int AO_OTHER = 1;
 static final int AO_PLAYER = 2;
 
+static final String spaces = "                    ";  
+
+/*************************************************************************************************/
+
+public String str_f( int value, int len ) {
+  String ret = str(value);
+  
+  if ( ret.length() >= len ) {
+    return ret;
+  }
+  
+  return String.valueOf(spaces.toCharArray(), 0, (len - ret.length() ) ) + ret;
+
+}
 
 /*************************************************************************************************/
 
@@ -57,6 +71,10 @@ int gameMode = MODE_NONE;
 int playerStore1Fld, playerStore1FCol;
 boolean hasSetAField;
 
+StringList protocol;
+String protLine;
+
+
 /*************************************************************************************************/
 
 public void newGame() {
@@ -70,26 +88,33 @@ public void newGame() {
     sDataEnd[i] = false;
   }
   
+  protocol = new StringList();
+
   initScreenGame();
 
   for ( int i=0; i<numPlayer; i++ ) {
      showMiniForm( i, playerSDs[i], AO_NONE );
   }
 
-  playerActual = 0;
+  playerActual = -1;
   
-  newTurn();
-
+  
 }
 
 /*************************************************************************************************/
 
-public void newTurn() {
+public boolean newTurn() {
+  playerActual++;
+  if ( playerActual >= numPlayer ) {
+    playerActual = 0;
+  }   
+
   d.roll();
   showDice( d, true );
   
-  gameMode = MODE_PLAYERA;
-
+  protocol.append(  str( playerActual ) + "   Dice : " + d.toString() );
+  println( protocol.get( protocol.size() - 1 ) );
+  
   initForm( playerSDs[playerActual] );
   btnPlay.setCaptionLabel( "  Würfel-Spieler >" + (playerActual+1) +"<" );
   showMiniForm( playerActual, playerSDs[playerActual], AO_PLAYER );
@@ -97,20 +122,40 @@ public void newTurn() {
   hasSetAField = false;
 
   playerOther = -1;
+  
+  protLine = "  P-" + str( playerActual ) + " > ";
+  
+  if ( isAIPlayer( playerActual ) ) {
+    return makeAIMove( playerActual, playerSDs[playerActual] , d, true ); 
+  } else {
+    protLine = protLine.concat("                       ");
+    // new turn is complete
+    return true;
+  }
 }
 
 /*************************************************************************************************/
 
 public boolean newOther() {
-
+  boolean isStepDone = false;
+  
   if ( playerOther == -1 ) {
     updateSData( playerSDs[playerActual] );
     showMiniForm( playerActual, playerSDs[playerActual], AO_PLAYER );
+
+    protLine = protLine.concat( "    >> " + playerSDs[playerActual].toString() );
+    protocol.append( protLine );
+    println( protLine );
+
     showDice( d, false );
 
   } else {
     updateSData( playerSDs[playerOther] );
     showMiniForm( playerOther, playerSDs[playerOther], AO_NONE );
+
+    protLine = protLine.concat( "    >> " + playerSDs[playerOther].toString() );
+    protocol.append( protLine );
+    println( protLine );
   }
 
   playerOther++;
@@ -119,125 +164,127 @@ public boolean newOther() {
   }
 
   if ( playerOther >= numPlayer ) {
-    showMiniForm( playerActual, playerSDs[playerActual], AO_NONE );
+// Needed??    showMiniForm( playerActual, playerSDs[playerActual], AO_NONE );
 
     // all players moved, so eval if any row is ended
     for ( int i=0; i<numPlayer; i++ ) {
        playerSDs[i].updateDataEnd();
     }
 
-    return false;
+  } else {
+
+    initForm( playerSDs[playerOther] );
+    btnPlay.setCaptionLabel( "  Anderer Spieler >" + (playerOther+1) +"<" );
+    showMiniForm( playerOther, playerSDs[playerOther], AO_OTHER );
+
+    protLine = "  O-" + str( playerOther ) + " > ";
+
+    if ( isAIPlayer( playerOther ) ) {
+      isStepDone = ( makeAIMove( playerOther, playerSDs[playerOther] , d, false ) ); 
+    } else {
+      protLine = protLine.concat("                       ");
+      isStepDone = true;
+    }
+
   }
 
-  gameMode = MODE_OTHER;
+  return isStepDone;
 
-  initForm( playerSDs[playerOther] );
-  btnPlay.setCaptionLabel( "  Anderer Spieler >" + (playerOther+1) +"<" );
-  showMiniForm( playerOther, playerSDs[playerOther], AO_OTHER );
-
-  return true;
 }
 
 /*************************************************************************************************/
 
-public void endGame() {
+public boolean endGame() {
   initScreenEnd();
   btnPlay.setCaptionLabel( " Neues Spiel " );
 
-  gameMode = MODE_OVER;
-  
+  return true;  
 }
 
 
 /*************************************************************************************************/
 
 
-public void makeAIMove( SData sd, Dice d, boolean isActual ) { 
+public boolean makeAIMove( int playerNum, SData sd, Dice d, boolean isActual ) { 
   AIMove ai = new AIMove( sd , d, isActual ); 
 
-  Option move = ai.calcEvaluation(true);
+  Option move = ai.calcEvaluation( ( playerNum == playerAI1 ) );
 
-  updateForm( move );
-
-  if ( isActual ) {
-    print("BEST ACTUAL ");
-    hasSetAField = true;
+  protLine = protLine.concat( str_f( move.color1,2) + ":" + str_f( move.field1,2) );
+  if ( move.isDouble() ) {
+    protLine = protLine.concat( "  &  " + str_f( move.color2,2) + ":" + str_f( move.field2,2) );
   } else {
-    print("BEST OTHER  ");
+    protLine = protLine.concat( "     " + "     " );
   }
 
+  protLine = protLine.concat( "  = " +  str_f( move.eval, 4 )  );
+
+  updateForm( move );
+  
+  if ( isActual ) {
+//    print("BEST ACTUAL ");
+    hasSetAField = true;
+  } else {
+//    print("BEST OTHER  ");
+  }
+
+/*
   print( move.color1 + ":" + move.field1 );
   if ( move.isDouble() ) {
     print( "   " + move.color2 + ":" + move.field2 );
   }
   println("   = " + move.eval );
+*/
 
+  // is never complete
+  return false;
 }
 
 
 /*************************************************************************************************/
 public void playNextStep() {
- 
-  switch( gameMode ) {
-    case MODE_NONE: 
-      newGame();
-      if ( isAIPlayer( playerActual ) ) {
-          makeAIMove( playerSDs[playerActual] , d, true ); 
-          playNextStep();
-        }
-      break;
-      
-    case MODE_PLAYERA: 
-    case MODE_PLAYERB: 
-      // actual player has finished
-      if ( hasSetAField ) {
-        newOther();
-
-        if ( isAIPlayer( playerOther ) ) {
-          makeAIMove( playerSDs[playerOther] , d, false ); 
-          playNextStep();
-        }
-
-      }
-      break;
-      
-    case MODE_OTHER: 
-      if ( newOther() ) {
-        if ( isAIPlayer( playerOther ) ) {
-          makeAIMove( playerSDs[playerOther] , d, false ); 
-          playNextStep();
-        }
-      } else {
-        // eval end
-
-        playerActual++;
-        if ( playerActual >= numPlayer ) {
-          playerActual = 0;
-        }   
-   
+  boolean stepComplete = false;
+  
+  
+  while ( ! stepComplete ) {
+    switch( gameMode ) {
+      case MODE_NONE: 
+        newGame();
+        gameMode = MODE_NEXTPLAYER;
+        break;
+        
+      case MODE_NEXTPLAYER: 
         // Check for END
         if ( gameEnded() ) {
-          endGame();
+          stepComplete = endGame();
+          gameMode = MODE_NONE;
         } else {
-          newTurn();
+          stepComplete = newTurn();
+          gameMode = MODE_PLAYERA;
+        }
+        break;
 
-          if ( isAIPlayer( playerActual ) ) {
-            makeAIMove( playerSDs[playerActual] , d, true ); 
-            playNextStep();
-          }
+
+      case MODE_PLAYERA: 
+      case MODE_PLAYERB: 
+        // actual player has finished
+        if ( hasSetAField ) {
+          gameMode = MODE_OTHER;
+        } else {
+          stepComplete = true;
         }
-      }
-      break;
-      
-    case MODE_OVER: 
-      newGame();
-      if ( isAIPlayer( playerActual ) ) {
-          makeAIMove( playerSDs[playerActual] , d, true ); 
-          playNextStep();
+        break;
+        
+      case MODE_OTHER: 
+        stepComplete = newOther();
+        if ( playerOther >= numPlayer ) {
+          gameMode = MODE_NEXTPLAYER;
+          stepComplete = false;
         }
-      break;
+        break;
+        
+    }
   }
-
 }
  
  

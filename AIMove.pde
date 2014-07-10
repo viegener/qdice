@@ -25,8 +25,8 @@
 
 static final int NO_EVAL = -100000;
 
-static final int playerAI1 = 1;
-static final int playerAI2 = -1;
+static final int playerAI1 = -1;
+static final int playerAI2 = 1;
 // static final int playerAI = -1;
 
 /****************************************************************************************************************/
@@ -306,7 +306,7 @@ public class AIMove extends Object {
       int eval = 0;
 
       if (  move.isFail() ) {
-        eval = -20;
+        eval = ( sd.getFail() + 1 ) * -10;
       } else if (  move.isNone() ) {
         eval = 0;
       } else {
@@ -314,8 +314,10 @@ public class AIMove extends Object {
         ct = sd.countMarks( move.color1 );
         if ( move.field1 == 10 ) {
           ct += (ct+1) * 2;
+        } else if ( ct > 4 ) {
+          ct+= 5;
         }
-        jump = move.field1 - sd.lastMark( move.color1 );
+        jump = move.field1 - sd.lastMark( move.color1 ) - 1;
         if ( isActual ) {
           tmpEval = ( ct - ( jump * jump ) );
         } else {
@@ -339,6 +341,8 @@ public class AIMove extends Object {
           ct = sd.countMarks( move.color2 );
           if ( move.field2 == 10 ) {
             ct += (ct+1) * 2;
+          } else if ( ct > 4 ) {
+            ct+= 5;
           }
           jump = move.field2 - sd.lastMark( move.color2 );
           if ( isActual ) {

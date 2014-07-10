@@ -35,6 +35,9 @@ static final int idxNone = -1;
 
 boolean sDataEnd[] = new boolean[ idxFail+1 ];
 
+static final String upperLine = "23456789ABC";
+static final String lowerLine = "CBA98765432";
+
 
 /*************************************************************************************************/
 /****************  calculate game end                                                     *******/
@@ -51,7 +54,6 @@ public boolean gameEnded() {
         count++;
     }
   }
-  
   return ( count > 1 );
 }
     
@@ -246,6 +248,43 @@ public class SData extends Object {
     return cx;
 
 
+  }
+  
+  
+  
+  public String partString( int fcol ) {
+    String ln = "";
+    
+    for ( int j=0; j<11; j++ ) {
+      if (  mark[fcol][j] ) {
+        ln = ln.concat( "x" );
+      } else {
+        if ( fcol < 2 ) {
+          ln = ln.concat( String.valueOf( upperLine.toCharArray(), j, 1 ) );
+        } else {
+          ln = ln.concat( String.valueOf( lowerLine.toCharArray(), j, 1 ) );
+        }
+      }
+    }
+    
+    if (  mark[fcol][10] ) {
+      ln = ln.concat( "*" );
+    } else {
+      ln = ln.concat( "O" );
+    }
+    return ln;
+    
+  }
+
+
+
+  public String toString() {
+    return " R:" + partString(0) + ": " + str_f(calcPoints(0),4) + "  " +   
+         " Y:" + partString(1) + ": " + str_f(calcPoints(1),4) + "  " + 
+         " G:" + partString(2) + ": " + str_f(calcPoints(2),4) + "  " + 
+         " B:" + partString(3) + ": " + str_f(calcPoints(3),4) + "  " + 
+         " == " + str_f( calcPoints(), 4 );
+    
   }
  
   

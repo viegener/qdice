@@ -75,10 +75,10 @@ static final int diceColor[] = {
 static final int diceOtherColor[] = { 
       0xFFDDDDDD,
       0xFFDDDDDD,
-      0xFF220000,
-      0xFF222200,
-      0xFF002200,
-      0xFF000022
+      0xFF660000,
+      0xFF666600,
+      0xFF006600,
+      0xFF000088
 };
 
 

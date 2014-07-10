@@ -42,6 +42,7 @@ static final String MYQDICE_PARSER_COPYRIGHT = "Copyright (C) 2014 by Johannes V
 
 
 TODO
+- AI: Other move seems always be not DONE
 - AI: adapt AI to add more fine for jumps when other player
 - AI: add multi KI
 

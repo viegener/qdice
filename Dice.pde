@@ -63,6 +63,16 @@ public class Dice extends Object {
   }
 
 
+  public String toString() {
+    return "W:"+ str(w1) + ":" + str(w2) + " " +
+        "R:" + str(r) + " "+ 
+        "Y:" + str(y) + " "+ 
+        "G:" + str(g) + " "+ 
+        "B:" + str(b); 
+
+  }
+
+
 
   public int getField( int fcol, boolean takeW1 ) {
     // TODO
