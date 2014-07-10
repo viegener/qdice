@@ -105,6 +105,33 @@ public class Option extends Object {
     return (color2 != -1);
   }
 
+
+  public String toString() {
+    return toString( true );
+  }
+
+  public String toString(boolean withEval) {
+    String ln;
+    
+    ln = str_f( color1,2) + ":" + str_f( field1,2);
+    
+    if ( isDouble() ) {
+      ln = ln.concat( "  &  " + str_f( color2,2) + ":" + str_f( field2,2) );
+    } else {
+      ln = ln.concat( "     " + "     " );
+    }
+    if ( withEval ) {
+      ln = ln.concat( "  = " +  str_f( eval, 4 )  );
+    }
+    return ln;
+  }
+
+
+
+
+
+
+
 } 
   
   
@@ -208,6 +235,8 @@ public class AIMove extends Object {
       
       // start calc with first move
 
+      println( "      MOVES : " + ctMoves+1 );
+
       // Calculate simple strategy
       
       bestMove = 0;
@@ -216,8 +245,8 @@ public class AIMove extends Object {
       } else {
         bestEval = evalMove2( moves[actMove] );
       }
-      actMove++;
-      
+      println( "      " + moves[actMove].toString() );
+
       while ( actMove < ctMoves ) {
         actMove++;    
         if ( algm1 ) {
@@ -225,6 +254,7 @@ public class AIMove extends Object {
         } else {
           anEval = evalMove2( moves[actMove] );
         }
+        println( "      " + moves[actMove].toString() );
         if ( anEval > bestEval ) {
           bestMove = actMove;
           bestEval = anEval;
