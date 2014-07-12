@@ -47,6 +47,11 @@ static final String spaces = "                    ";
 
 /*************************************************************************************************/
 
+int turnCounter;
+
+
+/*************************************************************************************************/
+
 public String str_f( int value, int len ) {
   String ret = str(value);
   
@@ -90,6 +95,8 @@ public void newGame() {
   
   protocol = new StringList();
 
+  turnCounter = 0;
+
   initScreenGame();
 
   for ( int i=0; i<numPlayer; i++ ) {
@@ -112,7 +119,9 @@ public boolean newTurn() {
   d.roll();
   showDice( d, true );
   
-  protocol.append(  str( playerActual ) + "   Dice : " + d.toString() );
+  turnCounter++;
+
+  protocol.append(  str( playerActual ) + "  Turn: " + turnCounter + "   Dice : " + d.toString() );
   println( protocol.get( protocol.size() - 1 ) );
   
   initForm( playerSDs[playerActual] );

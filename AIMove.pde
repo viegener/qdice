@@ -25,7 +25,7 @@
 
 static final int NO_EVAL = -100000;
 
-static final int playerAI1 = -1;
+static final int playerAI1 = 0;
 static final int playerAI2 = 1;
 // static final int playerAI = -1;
 
@@ -235,7 +235,7 @@ public class AIMove extends Object {
       
       // start calc with first move
 
-      println( "      MOVES : " + ctMoves+1 );
+      println( "      MOVES : " + (ctMoves+1) );
 
       // Calculate simple strategy
       
