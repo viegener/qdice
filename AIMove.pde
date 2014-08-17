@@ -26,7 +26,7 @@
 static final int NO_EVAL = -100000;
 
 static final int playerAI1 = 0;
-static final int playerAI2 = 1;
+static final int playerAI2 = -1;
 // static final int playerAI = -1;
 
 /****************************************************************************************************************/

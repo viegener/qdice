@@ -86,6 +86,10 @@ boolean initForm;
 
 /*************************************************************************************************/
 
+static float guiScale;
+static int sizeX;
+static int sizeY;
+
 static final int formOffsetX = 0; // 5;
 static final int formOffsetY = 0;  // 50;
 
@@ -125,37 +129,93 @@ static final String pt_base = "pt";
 /****************  Create the GUI during setup()                                           *******/
 /*************************************************************************************************/
 
+
+
+public int scaleUp(int val) {
+  float temp = val;
+  
+  temp = temp * guiScale;
+  
+  return round( temp );
+}
+
+
+public int scaleDown(int val) {
+  float temp = val;
+  
+  temp = temp / guiScale;
+  
+  return round( temp );
+}
+
+
 public void initializeGUI() {
   int posX, posY;
   String ptName;
+  
+  sizeX = formSizeX+(2*padSize)+qmSizeX;
+  sizeY = formSizeY+(2*padSize);
 
-  size(formSizeX+(2*padSize)+qmSizeX, formSizeY+(2*padSize));
+  float gscx = sizeX;
+  gscx = displayWidth / gscx;
+  
+  float gscy = sizeY;
+  gscy = displayHeight / gscy;
+
+  guiScale = gscx;
+  if ( gscy < gscx ) {
+    guiScale = gscy;
+  }
+
+  println();
+  println(guiScale);
+  println();
+
+//  size(sizeX, sizeY);
+  size(displayWidth, displayHeight);
   frameRate(30); 
-  frame.setTitle(MYQDICE_PARSER_TITLE_REV);
+//??? ANDROID   frame.setTitle(MYQDICE_PARSER_TITLE_REV);
+
 
   PFont pfont = createFont("Arial",10,true); // use true/false for smooth/no-smooth
   PFont pfontEditor = createFont("Courier",12,true); // use true/false for smooth/no-smooth
   PFont pfontBig = createFont("Arial",14);
 
   doff = loadImage("default-off.png");
+  doff.loadPixels();
   aoff = loadImage("active-off.png"); 
+  aoff.loadPixels();
   don = loadImage("default-on.png");
+  don.loadPixels();
   aon = loadImage("active-on.png");
+  aon.loadPixels();
 
   fdoff = loadImage("fail-off.png");
+  fdoff.loadPixels();
   faoff = loadImage("failactive-off.png"); 
+  faoff.loadPixels();
   fdon = loadImage("fail-on.png");
+  fdon.loadPixels();
   faon = loadImage("failactive-on.png");
+  faon.loadPixels();
 
   coff = loadImage("closed-off.png");
+  coff.loadPixels();
 
   rainbow = loadImage("rainbow.png");
+  rainbow.loadPixels();
+  
+  println("init cp5");
 
   cp5 = new ControlP5(this, pfont); 
+
+  cp5.setScale( guiScale );
 
   /*********************/
   /* Tabs */
   
+  println("init tab");
+
   tabDefault = cp5.getTab("default")
      .setLabel("  Play  ")
      .setId(1)
@@ -170,18 +230,26 @@ public void initializeGUI() {
      ; 
 */
 
+  println("more images");
+
 
   qpage = loadImage( "qdice-form.png" );
   qpage.resize( formSizeX, formSizeY );
+  qpage.loadPixels();
 
   qepage = loadImage( "qdice-end.png" );
   qepage.resize( formSizeX, formSizeY );
+  qepage.loadPixels();
 
   qspage = loadImage( "qdice-splash.png" );
   qspage.resize( formSizeX, formSizeY );
+  qspage.loadPixels();
 
   qmpage = loadImage( "qdice-mini-b.png" );
-  qmpage.resize( qmSizeX, qmSizeY );
+  qmpage.resize( formSizeX, formSizeY );
+  qmpage.loadPixels();
+
+  println("first button");
 
   btnForm = cp5.addButton("btnForm")
      .setPosition(formOffsetX, formOffsetY )
@@ -190,13 +258,15 @@ public void initializeGUI() {
      .moveTo( tabDefault )
      ;
 
+  println("more buttons");
+
   btnMForms = new Button[MAX_PLAYER];
 //  posY = formOffsetY-(MAX_PLAYER * padSize / 2);
   posY = formOffsetY;
   for ( int i=0; i< MAX_PLAYER; i++ ) {
     btnMForms[i] = cp5.addButton("btnMForms" + i)
        .setPosition(formOffsetX+formSizeX + padSize, posY  )
-       .setSize(qmpage.width + padSize, qmpage.height + qmlabelSize + padSize)
+       .setSize(qmpage.width + padSize, qmpage.height + qmlabelSize + padSize )
        .setImage( qmpage )
        .hide()
        .moveTo( tabDefault )
@@ -277,6 +347,8 @@ public void initializeGUI() {
 
   for ( int i=1; i< 7; i++ ) {
     picDices[i].resize( diceSize, diceSize );
+    picDices[i].loadPixels();
+
   }
 
   posY = startY + ( 5 * offsetY );
@@ -293,6 +365,8 @@ public void initializeGUI() {
     posX += diceSize + padSize; 
   }
 
+
+  println("end initGUI");
 
 }
 
@@ -336,7 +410,8 @@ public PicToggle addPicToggleFail( int posX, int posY, String name ) {
 public void initScreenSplash() {
   tabDefault.bringToFront();
 
-  btnForm.setPosition((width - formSizeX)/2 , formOffsetY );
+//  btnForm.setPosition((width - formSizeX)/2 , formOffsetY );
+  btnForm.setPosition(scaleDown((width - scaleUp(formSizeX))/2 ), scaleUp(formOffsetY) );
   btnForm.setImage( qspage );  
 
   for ( int i=0; i< numPlayer; i++ ) {
@@ -468,6 +543,7 @@ public PGraphics makeMPage( int plid, SData sd, int activeOther  ) {
     posX = stx;
     for ( int j=0; j<11; j++ ) {
       if ( sd.getMark( i, j ) ) {
+        pg.strokeWeight(4);
         pg.line( posX, posY, posX+w, posY+h );
         pg.line( posX+w, posY, posX, posY+h );
       }
@@ -689,6 +765,7 @@ public void updateSData( SData sd ) {
 
 
 void draw() {
+   scale( guiScale );
   // dark background
 //  background(0xff022020);
   background(0xfff2f2f2);
@@ -774,6 +851,24 @@ void controlEvent(ControlEvent theEvent) {
 
   if (  ( theEvent.getController() instanceof PicToggle) ) {  
     if ( ! initForm ) {
+      print("Mouse " );
+      print( mouseX ); 
+      print( ":" ); 
+      print( mouseY ); 
+      println();
+      PVector pv = ((PicToggle) theEvent.getController()).getAbsolutePosition();
+      print("AbsolutePosition " );
+      print( pv.x ); 
+      print( ":" ); 
+      print( pv.y ); 
+      println();
+      pv = ((PicToggle) theEvent.getController()).getPosition();
+      print("Position " );
+      print( pv.x ); 
+      print( ":" ); 
+      print( pv.y ); 
+      println();
+      
       handleFormToggle( (PicToggle) theEvent.getController() );
     }
   }
