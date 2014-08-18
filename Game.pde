@@ -23,7 +23,7 @@
  *
  *************************************************************************************************/  
 
-static final int numPlayer = 2;
+static final int numPlayer = 4;
 
 static final int MAX_PLAYER = 4;
 
@@ -42,6 +42,7 @@ static final int MODE_NEXTPLAYER  = 4;
 static final int AO_NONE = 0;
 static final int AO_OTHER = 1;
 static final int AO_PLAYER = 2;
+static final int AO_PLAYERDONE = 3;
 
 static final String spaces = "                    ";  
 
@@ -125,7 +126,7 @@ public boolean newTurn() {
   println( protocol.get( protocol.size() - 1 ) );
   
   initForm( playerSDs[playerActual] );
-  btnPlay.setCaptionLabel( "  Würfel-Spieler >" + (playerActual+1) +"<" );
+  btnPlay.setCaptionLabel( "  Wähle mindestens 1 Kombination - Spieler>" + (playerActual+1) +"<" );
   showMiniForm( playerActual, playerSDs[playerActual], AO_PLAYER );
   
   hasSetAField = false;
@@ -150,7 +151,7 @@ public boolean newOther() {
   
   if ( playerOther == -1 ) {
     updateSData( playerSDs[playerActual] );
-    showMiniForm( playerActual, playerSDs[playerActual], AO_PLAYER );
+    showMiniForm( playerActual, playerSDs[playerActual], AO_PLAYERDONE );
 
     protLine = protLine.concat( "    >> " + playerSDs[playerActual].toString() );
     protocol.append( protLine );
@@ -173,7 +174,7 @@ public boolean newOther() {
   }
 
   if ( playerOther >= numPlayer ) {
-// Needed??    showMiniForm( playerActual, playerSDs[playerActual], AO_NONE );
+    showMiniForm( playerActual, playerSDs[playerActual], AO_NONE );
 
     // all players moved, so eval if any row is ended
     for ( int i=0; i<numPlayer; i++ ) {
@@ -183,7 +184,7 @@ public boolean newOther() {
   } else {
 
     initForm( playerSDs[playerOther] );
-    btnPlay.setCaptionLabel( "  Anderer Spieler >" + (playerOther+1) +"<" );
+    btnPlay.setCaptionLabel( "  Weisse Kombination verwenden ? - Spieler >" + (playerOther+1) +"<" );
     showMiniForm( playerOther, playerSDs[playerOther], AO_OTHER );
 
     protLine = "  O-" + str( playerOther ) + " > ";

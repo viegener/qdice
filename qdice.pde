@@ -26,6 +26,8 @@
  
 void setup(){
 
+  initializeGUI();
+
   println();
   println(MYQDICE_PARSER_TITLE_REV);
   println(MYQDICE_PARSER_COPYRIGHT);
@@ -34,8 +36,7 @@ void setup(){
   println("Ths program comes with ABSOLUTELY NO WARRANTY;");
   println("This is free software, and you are welcome to redistribute it under certain conditions;");
   println();  
- 
-  initializeGUI();
+
   initScreenSplash();
  
   println();

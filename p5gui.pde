@@ -82,6 +82,9 @@ static final int diceOtherColor[] = {
 };
 
 
+static final int COL_BACKGROUND = 0xfff2f2f2;
+
+
 boolean initForm;
 
 /*************************************************************************************************/
@@ -167,9 +170,11 @@ public void initializeGUI() {
     guiScale = gscy;
   }
 
+/*
   println();
   println(guiScale);
   println();
+*/
 
 //  size(sizeX, sizeY);
   size(displayWidth, displayHeight);
@@ -205,8 +210,6 @@ public void initializeGUI() {
   rainbow = loadImage("rainbow.png");
   rainbow.loadPixels();
   
-  println("init cp5");
-
   cp5 = new ControlP5(this, pfont); 
 
   cp5.setScale( guiScale );
@@ -214,8 +217,6 @@ public void initializeGUI() {
   /*********************/
   /* Tabs */
   
-  println("init tab");
-
   tabDefault = cp5.getTab("default")
      .setLabel("  Play  ")
      .setId(1)
@@ -230,9 +231,6 @@ public void initializeGUI() {
      ; 
 */
 
-  println("more images");
-
-
   qpage = loadImage( "qdice-form.png" );
   qpage.resize( formSizeX, formSizeY );
   qpage.loadPixels();
@@ -246,10 +244,8 @@ public void initializeGUI() {
   qspage.loadPixels();
 
   qmpage = loadImage( "qdice-mini-b.png" );
-  qmpage.resize( formSizeX, formSizeY );
+  qmpage.resize( qmSizeX, qmSizeY ); 
   qmpage.loadPixels();
-
-  println("first button");
 
   btnForm = cp5.addButton("btnForm")
      .setPosition(formOffsetX, formOffsetY )
@@ -257,8 +253,6 @@ public void initializeGUI() {
      .setImage( qpage )
      .moveTo( tabDefault )
      ;
-
-  println("more buttons");
 
   btnMForms = new Button[MAX_PLAYER];
 //  posY = formOffsetY-(MAX_PLAYER * padSize / 2);
@@ -271,6 +265,7 @@ public void initializeGUI() {
        .hide()
        .moveTo( tabDefault )
        ;
+//    println("height : " + qmpage.height ); 
     posY += qmpage.height + qmlabelSize + padSize; 
     }
 
@@ -325,8 +320,8 @@ public void initializeGUI() {
   /***********************************************/
 
   btnPlay = cp5.addButton("btnPlay")
-     .setPosition(formOffsetX + formSizeX - 200, startY + ( 5 * offsetY ) )
-     .setSize(150, 30)
+     .setPosition(formOffsetX + formSizeX - 320, startY + ( 5 * offsetY ) )
+     .setSize(300, 30)
      .setCaptionLabel( " Play " )
 //     .setColorBackground( 0xFFFFFFFF )
      .moveTo( tabDefault )
@@ -365,8 +360,6 @@ public void initializeGUI() {
     posX += diceSize + padSize; 
   }
 
-
-  println("end initGUI");
 
 }
 
@@ -496,7 +489,7 @@ public void btnForm(int theValue) {
 /****************  PGraphics for small qpage                                               *******/
 /*************************************************************************************************/
 
-// 0 - inactive / 1 - other / 2 - player
+// 0 - inactive / 1 - other / 2 - player / 3- player (but not active)
 
 public void showMiniForm( int plid, SData sd, int activeOther ) {
   btnMForms[plid].setImage( makeMPage( plid, sd, activeOther) );
@@ -524,17 +517,32 @@ public PGraphics makeMPage( int plid, SData sd, int activeOther  ) {
   
   pg.beginDraw();
   
+  pg.background( COL_BACKGROUND );
   if ( activeOther == AO_PLAYER ) {
     pg.image(rainbow, 0, 0, qmSizeX+padSize, qmSizeY+qmlabelSize+padSize );
+  } else if ( activeOther == AO_PLAYERDONE ) {
+    pg.image(rainbow, padSize/2, 0,  qmSizeX, qmlabelSize + (padSize/2) );
   } else if ( activeOther == AO_OTHER ) {
-    pg.background( 0xFFDDDDDD );
+// OTHER means no fill
+    pg.fill( 0xff404040 );
+    pg.rect( padSize/2, 0,  qmSizeX, qmlabelSize + (padSize/2) );
   } else {
-    pg.background( 0xff022020);
   }
   
   pg.textSize( 14 );
-  pg.fill( 0xFFDDDDDD );
-  pg.text( "Spieler " + (plid+1), padSize, qmlabelSize );
+//  pg.fill( 0xFFEEEEEE );
+  pg.fill( 0xFF000000 );
+  if ( activeOther == AO_PLAYER ) {
+    pg.text( "* Spieler " + (plid+1) + " *", padSize, qmlabelSize );
+  } else if ( activeOther == AO_PLAYERDONE ) {
+    pg.text( "Spieler " + (plid+1), padSize, qmlabelSize );
+  } else if ( activeOther == AO_OTHER ) {
+    pg.fill( COL_BACKGROUND );
+    pg.text( "* Spieler " + (plid+1) + " *", padSize, qmlabelSize );
+  } else {
+    pg.text( "Spieler " + (plid+1), padSize, qmlabelSize );
+  }
+
   pg.image(qmpage, padSize/2, qmlabelSize + (padSize/2), qmSizeX, qmSizeY);
 
   posY = sty;
@@ -768,7 +776,7 @@ void draw() {
    scale( guiScale );
   // dark background
 //  background(0xff022020);
-  background(0xfff2f2f2);
+  background(COL_BACKGROUND);
   /*
   if ( gpg != null ) {
     image( gpg, formOffsetX+650, formOffsetY );
@@ -851,6 +859,7 @@ void controlEvent(ControlEvent theEvent) {
 
   if (  ( theEvent.getController() instanceof PicToggle) ) {  
     if ( ! initForm ) {
+/*
       print("Mouse " );
       print( mouseX ); 
       print( ":" ); 
@@ -868,7 +877,7 @@ void controlEvent(ControlEvent theEvent) {
       print( ":" ); 
       print( pv.y ); 
       println();
-      
+*/      
       handleFormToggle( (PicToggle) theEvent.getController() );
     }
   }

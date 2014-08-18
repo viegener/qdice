@@ -25,8 +25,9 @@
 
 static final int NO_EVAL = -100000;
 
-static final int playerAI1 = 0;
-static final int playerAI2 = -1;
+static final int playerAI1 = 1;
+static final int playerAI2 = 2;
+static final int playerAI3 = 3;
 // static final int playerAI = -1;
 
 /****************************************************************************************************************/
@@ -35,6 +36,8 @@ boolean isAIPlayer( int aPlayer ) {
   if ( aPlayer ==  playerAI1 ) {
     return true;
   } else if ( aPlayer ==  playerAI2) {
+    return true;
+  } else if ( aPlayer ==  playerAI3) {
     return true;
   }
   return false;
